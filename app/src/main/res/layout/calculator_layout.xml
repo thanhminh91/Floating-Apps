@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="300dp"
+	android:layout_height="wrap_content"
+	android:orientation="horizontal">
+
+	<ImageView
+		android:layout_width="40dp"
+		android:layout_height="40dp"
+		android:id="@+id/collapsedCalc"
+		android:src="@drawable/simple_calc"/>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:orientation="vertical"
+		android:padding="2dp"
+		android:background="@android:color/black"
+		android:id="@+id/expandedCalc"
+		android:weightSum="1">
+
+		<RelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:id="@+id/topNav"
+			android:background="@color/buttonColor"
+			android:padding="5dp">
+
+			<RelativeLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal">
+
+				<LinearLayout
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:paddingLeft="3dp">
+
+					<ImageView
+						android:layout_height="25dp"
+						android:layout_width="25dp"
+						android:src="@drawable/launch_app"
+						android:onClick="launchActivity"
+						android:layout_gravity="center_vertical"
+						android:padding="5dp"
+						android:layout_marginRight="5dp"/>
+
+					<ImageView
+						android:layout_height="25dp"
+						android:layout_width="25dp"
+						android:src="@drawable/history_icon"
+						android:onClick="showHistory"
+						android:layout_gravity="center_vertical"
+						android:padding="5dp"
+						android:layout_marginLeft="5dp"/>
+
+				</LinearLayout>
+
+				<LinearLayout
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:paddingRight="3dp"
+					android:layout_alignParentRight="true">
+
+					<TextView
+						android:layout_width="wrap_content"
+						android:layout_height="wrap_content"
+						android:onClick="minimizeView"
+						android:text="—"
+						android:textStyle="bold"
+						android:paddingRight="10dp"
+						android:paddingLeft="10dp"/>
+
+					<ImageView
+						android:layout_width="25dp"
+						android:layout_height="25dp"
+						android:onClick="closeView"
+						android:layout_marginLeft="7dp"
+						android:src="@android:drawable/ic_delete"/>
+
+				</LinearLayout>
+
+			</RelativeLayout>
+
+		</RelativeLayout>
+
+		<RelativeLayout
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="1"
+            android:id="@+id/main_calculator">
+
+			<EditText
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:background="@android:color/white"
+				android:text="0"
+				android:id="@+id/calcField"
+				android:layout_below="@+id/topNav"
+				android:gravity="right"
+				android:paddingRight="8dp"
+				android:textSize="30dp"/>
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				android:background="@color/calcBackground"
+				android:onClick="buttonAction"
+				android:id="@+id/operatorLine"
+				android:layout_below="@+id/calcField">
+
+				<Button
+					android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:layout_weight="1"
+					android:layout_margin="8dp"
+					android:onClick="deleteAction"
+					android:text="DEL"/>
+
+				<Button
+					android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:layout_weight="1"
+					android:onClick="buttonAction"
+					android:layout_margin="8dp"
+					android:text="("/>
+
+				<Button
+					android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:layout_weight="1"
+					android:onClick="buttonAction"
+					android:layout_margin="8dp"
+					android:text=")"/>
+
+				<Button
+					android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:layout_weight="1"
+					android:layout_margin="8dp"
+					android:onClick="buttonAction"
+					android:text="÷"/>
+
+			</LinearLayout>
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				android:background="@color/calcBackground"
+				android:id="@+id/firstLine"
+				android:layout_below="@+id/operatorLine">
+
+				<Button
+					android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:layout_weight="1"
+					android:onClick="buttonAction"
+					android:layout_margin="8dp"
+					android:text="7"/>
+
+				<Button
+					android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:layout_weight="1"
+					android:onClick="buttonAction"
+					android:layout_margin="8dp"
+					android:text="8"/>
+
+				<Button
+					android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:layout_weight="1"
+					android:onClick="buttonAction"
+					android:layout_margin="8dp"
+					android:text="9"/>
+
+				<Button
+					android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:layout_weight="1"
+					android:onClick="buttonAction"
+					android:layout_margin="8dp"
+					android:text="*"/>
+
+			</LinearLayout>
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				android:background="@color/calcBackground"
+				android:id="@+id/secondLine"
+				android:layout_below="@+id/firstLine">
+
+				<Button
+					android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:layout_weight="1"
+					android:onClick="buttonAction"
+					android:layout_margin="8dp"
+					android:text="4"/>
+
+				<Button
+					android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:layout_weight="1"
+					android:onClick="buttonAction"
+					android:layout_margin="8dp"
+					android:text="5"/>
+
+				<Button
+					android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:layout_weight="1"
+					android:onClick="buttonAction"
+					android:layout_margin="8dp"
+					android:text="6"/>
+
+				<Button
+					android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:layout_weight="1"
+					android:onClick="buttonAction"
+					android:layout_margin="8dp"
+					android:text="-"/>
+
+			</LinearLayout>
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				android:background="@color/calcBackground"
+				android:id="@+id/thirdLine"
+				android:layout_below="@+id/secondLine">
+
+				<Button
+					android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:layout_weight="1"
+					android:onClick="buttonAction"
+					android:layout_margin="8dp"
+					android:text="1"/>
+
+				<Button
+					android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:layout_weight="1"
+					android:onClick="buttonAction"
+					android:layout_margin="8dp"
+					android:text="2"/>
+
+				<Button
+					android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:layout_weight="1"
+					android:onClick="buttonAction"
+					android:layout_margin="8dp"
+					android:text="3"/>
+
+				<Button
+					android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:layout_weight="1"
+					android:onClick="buttonAction"
+					android:layout_margin="8dp"
+					android:text="+"/>
+
+			</LinearLayout>
+
+			<LinearLayout
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:orientation="horizontal"
+				android:background="@color/calcBackground"
+				android:id="@+id/fourthLine"
+				android:layout_below="@+id/thirdLine">
+
+				<Button
+					android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:layout_weight="1"
+					android:onClick="buttonAction"
+					android:layout_margin="8dp"
+					android:text="0"/>
+
+				<Button
+					android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:layout_weight="1"
+					android:onClick="buttonAction"
+					android:layout_margin="8dp"
+					android:text="."/>
+
+				<Button
+					android:layout_width="0dp"
+					android:layout_height="match_parent"
+					android:background="@color/buttonColor"
+					android:layout_weight="1.5"
+					android:layout_margin="8dp"
+					android:onClick="computeCalculation"
+					android:text="="/>
+
+			</LinearLayout>
+
+		</RelativeLayout>
+
+		<ScrollView
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:id="@+id/scrollCalcHistory"
+			android:visibility="gone">
+
+			<ListView
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:id="@+id/calcHistory"/>
+
+		</ScrollView>
+
+	</LinearLayout>
+
+</FrameLayout>
+
