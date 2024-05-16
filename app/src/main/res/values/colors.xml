@@ -5,4 +5,6 @@
     <color name="colorAccent">#FF4081</color>
     <color name="buttonColor">#00aaaa</color>
     <color name="calcBackground">#dddddd</color>
+    <color name="white">#ffffff</color>
+    <color name="black">#000000</color>
 </resources>

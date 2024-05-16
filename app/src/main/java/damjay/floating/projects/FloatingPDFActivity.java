@@ -12,6 +12,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
+import android.text.Html;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -21,8 +22,8 @@ import android.widget.SimpleAdapter;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
+import damjay.floating.projects.R;
 import damjay.floating.projects.background.PDFReaderService;
 import damjay.floating.projects.customadapters.HistorySimpleAdapter;
 import damjay.floating.projects.utils.FormatUtils;
@@ -54,6 +55,7 @@ public class FloatingPDFActivity extends AppCompatActivity {
             return;
         }
         setContentView(R.layout.activity_floating_pdf);
+        getSupportActionBar().setTitle(Html.fromHtml("<font color='#ffffff'>" + getResources().getString(R.string.floating_pdf) + "</font>"));
         // AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
         initializeViews();
         checkPermission();
