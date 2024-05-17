@@ -1,7 +1,7 @@
 package damjay.floating.projects.calculate;
 
 import java.util.ArrayList;
-import android.icu.math.BigDecimal;
+import java.math.BigDecimal;
 
 public class CompoundExpression extends Expression {
     private ArrayList<Expression> expressions;

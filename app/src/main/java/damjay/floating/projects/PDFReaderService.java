@@ -1,10 +1,11 @@
-package damjay.floating.projects.background;
+package damjay.floating.projects;
 
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.PixelFormat;
 import android.graphics.pdf.PdfRenderer;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.view.Gravity;
@@ -21,22 +22,22 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import damjay.floating.projects.FloatingPDFActivity;
+import damjay.floating.projects.MainActivity;
 import damjay.floating.projects.R;
 import damjay.floating.projects.utils.ImageScaler;
 import damjay.floating.projects.utils.TouchState;
+import damjay.floating.projects.utils.ViewsUtils;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import damjay.floating.projects.utils.ViewsUtils;
-import android.widget.RelativeLayout;
-import android.widget.LinearLayout;
-import damjay.floating.projects.MainActivity;
 
 public class PDFReaderService extends Service {
     private View pdfLayout;
@@ -90,7 +91,7 @@ public class PDFReaderService extends Service {
             assignNavButtons();
             // initializePdfPage();
         } catch (Throwable report) {
-        	report.printStackTrace();
+            report.printStackTrace();
         }
 
     }
@@ -100,7 +101,7 @@ public class PDFReaderService extends Service {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent("android.intent.category.LAUNCHER");
-                    String classPackage = MainActivity.class.getPackageName();
+                    String classPackage = MainActivity.class.getPackage().getName();
                     String fullClassName = MainActivity.class.getCanonicalName();
                     intent.setClassName(classPackage, fullClassName);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -365,10 +366,11 @@ public class PDFReaderService extends Service {
     }
 
     private WindowManager.LayoutParams getLayoutParams() {
+        int type = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? LayoutParams.TYPE_APPLICATION_OVERLAY : LayoutParams.TYPE_PHONE;
         LayoutParams params = new LayoutParams(
             LayoutParams.WRAP_CONTENT,
             LayoutParams.WRAP_CONTENT,
-            LayoutParams.TYPE_APPLICATION_OVERLAY,
+            type,
             LayoutParams.FLAG_NOT_FOCUSABLE,
             PixelFormat.TRANSLUCENT);
 

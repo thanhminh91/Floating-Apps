@@ -74,18 +74,20 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".FileBrowserActivity" android:exported="true"/>         
+        <activity android:name=".files.FileBrowserActivity" android:exported="true"/>         
 
         <service
-            android:name=".background.CalculatorService"
+            android:name=".calculate.CalculatorService"
             android:enabled="true"
             android:exported="true"/>
         <service
-            android:name=".background.PDFReaderService"
+            android:name=".PDFReaderService"
             android:enabled="true"
             android:exported="true"/>
-
-
+        <service
+            android:name=".bible.BibleService"
+            android:enabled="true"
+            android:exported="true"/>
     </application>
 
 </manifest>

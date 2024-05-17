@@ -12,7 +12,7 @@ import android.text.Html;
 import android.view.View;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import damjay.floating.projects.background.CalculatorService;
+import damjay.floating.projects.calculate.CalculatorService;
 
 public class MainActivity extends AppCompatActivity {
     public static final int FLOAT_PERMISSION_REQUEST = 100;
@@ -23,18 +23,17 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
+
         getSupportActionBar().setTitle(Html.fromHtml("<font color='#ffffff'>" + getResources().getString(R.string.floating_pdf) + "</font>"));
 
         findViewById(R.id.floating_pdf).setOnClickListener(getClickListener(FloatingPDFActivity.class));
         findViewById(R.id.floating_calculator).setOnClickListener(getServiceClickListener(CalculatorService.class));
         findViewById(R.id.floating_bible).setOnClickListener(getBibleClickListener());
-        
-        // AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+
         // Request for optional optimization
         checkBatteryOptimization();
         // Request for compulsory permissions
-        // checkPermissions();
+//      checkPermissions();
     }
 
     private View.OnClickListener getBibleClickListener() {
@@ -47,8 +46,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkBatteryOptimization() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return;
         // Is battery optimization enabled?
-        if (!((PowerManager) getSystemService(POWER_SERVICE)).isIgnoringBatteryOptimizations(MainActivity.class.getPackageName())) {
+        if (!((PowerManager) getSystemService(POWER_SERVICE)).isIgnoringBatteryOptimizations(MainActivity.class.getPackage().getName())) {
             // If a dialog is open, don't open another
             if (alertDialog != null) return;
             alertDialog = new AlertDialog.Builder(this)
@@ -141,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
-    
+
     private void closeAlertDialog() {
         if (alertDialog != null) {
             alertDialog.dismiss();

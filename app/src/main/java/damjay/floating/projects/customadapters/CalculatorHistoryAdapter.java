@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import damjay.floating.projects.R;
-import damjay.floating.projects.background.CalculatorService;
+import damjay.floating.projects.calculate.CalculatorService;
 import java.util.ArrayList;
 
 public class CalculatorHistoryAdapter extends BaseAdapter {

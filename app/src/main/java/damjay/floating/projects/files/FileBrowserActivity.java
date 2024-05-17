@@ -1,4 +1,4 @@
-package damjay.floating.projects;
+package damjay.floating.projects.files;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -8,6 +8,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import androidx.appcompat.app.AppCompatActivity;
+import damjay.floating.projects.FloatingPDFActivity;
+import damjay.floating.projects.R;
 import damjay.floating.projects.customadapters.FileListAdapter;
 import damjay.floating.projects.files.FileItem;
 import java.io.File;
@@ -15,18 +17,18 @@ import java.io.IOException;
 
 public class FileBrowserActivity extends AppCompatActivity {
     ListView fileList;
-    static String currentInput;
+    public static String currentInput;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_browser);
-        
+
         getSupportActionBar().setTitle(Html.fromHtml("<font color='#ffffff'>" + getResources().getString(R.string.floating_pdf) + "</font>"));
 
         fileList = findViewById(R.id.fileList);
         View upButton = findViewById(R.id.traverseUp);
-        
+
         fileList.setAdapter(new FileListAdapter(this, validateInput()));
 
         fileList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -46,7 +48,7 @@ public class FileBrowserActivity extends AppCompatActivity {
                                 .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int id) {
-                                       showPDF(item.getFile()); 
+                                        showPDF(item.getFile()); 
                                     }
                                 })
                                 .setNegativeButton(android.R.string.no, null)
@@ -63,7 +65,7 @@ public class FileBrowserActivity extends AppCompatActivity {
                 }   
             });
     }
-    
+
     private File validateInput() {
         if (currentInput == null || currentInput.trim().length() == 0)
             return null;
@@ -93,7 +95,7 @@ public class FileBrowserActivity extends AppCompatActivity {
             fileList.setAdapter(listAdapter);
         }
     }
-    
+
     public void showPDF(File file) {
         try {
             FloatingPDFActivity.returnedPath = file.getCanonicalPath();

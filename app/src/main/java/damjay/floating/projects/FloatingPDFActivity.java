@@ -24,8 +24,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import damjay.floating.projects.R;
-import damjay.floating.projects.background.PDFReaderService;
 import damjay.floating.projects.customadapters.HistorySimpleAdapter;
+import damjay.floating.projects.files.FileBrowserActivity;
 import damjay.floating.projects.utils.FormatUtils;
 import damjay.floating.projects.utils.IOUtils;
 import java.io.File;
@@ -296,7 +296,7 @@ public class FloatingPDFActivity extends AppCompatActivity {
                 }).create();
             alertDialog.show();
             return false;
-        } else if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
             // If a dialog is open, don't open another
             if (alertDialog != null) return false;
             alertDialog = new AlertDialog.Builder(this)
