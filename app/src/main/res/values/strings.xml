@@ -3,6 +3,7 @@
     <string name="floating_pdf">Floating PDF</string>
     <string name="floating_calc">Floating Calculator</string>
     <string name="floating_bible">Floating Bible</string>
+    <string name="floating_clicker">Floating Clicker</string>
     
     <string name="path_hint">Path to PDF File</string>
     <string name="browse_files">Browse Files</string>
@@ -15,6 +16,7 @@
     
     <!--Remove later-->
     <string name="bible_todo">Bible not available yet, but no worries, It will be available soon.</string>
+    <string name="clicker_todo">Screen clicker not available yet, but no worries, It will be available soon.</string>
     
     <string name="grant_permissions">Grant Permissions</string>
     <string name="incorrect_format_message">Are you sure this is a PDF file?</string>

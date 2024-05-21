@@ -4,5 +4,14 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="buttonColor">#00aaaa</color>
-    <color name="calcBackground">#444444</color>
+
+    <!--Floating calculator colors-->
+    <color name="calcBackground">#111111</color>
+    <color name="calcFieldBackground">#333333</color>
+    <color name="calcFieldColor">#ffffff</color>
+    <color name="calcButtonBackground">#000000</color>
+    <color name="calcTextColor">#ffffff</color>
+
+    <!--<color name="white">#ffffff</color>
+    <color name="black">#000000</color>-->
 </resources>

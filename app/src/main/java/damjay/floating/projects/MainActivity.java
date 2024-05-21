@@ -26,23 +26,15 @@ public class MainActivity extends AppCompatActivity {
 
         getSupportActionBar().setTitle(Html.fromHtml("<font color='#ffffff'>" + getResources().getString(R.string.floating_pdf) + "</font>"));
 
-        findViewById(R.id.floating_pdf).setOnClickListener(getClickListener(FloatingPDFActivity.class));
-        findViewById(R.id.floating_calculator).setOnClickListener(getServiceClickListener(CalculatorService.class));
+        findViewById(R.id.floating_pdf).setOnClickListener(getPDFClickListener(FloatingPDFActivity.class));
+        findViewById(R.id.floating_calculator).setOnClickListener(getCalcClickListener(CalculatorService.class));
         findViewById(R.id.floating_bible).setOnClickListener(getBibleClickListener());
+        findViewById(R.id.floating_clicker).setOnClickListener(getClickerListener());
 
         // Request for optional optimization
         checkBatteryOptimization();
         // Request for compulsory permissions
 //      checkPermissions();
-    }
-
-    private View.OnClickListener getBibleClickListener() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(MainActivity.this, R.string.bible_todo, Toast.LENGTH_LONG).show();
-            }
-        };
     }
 
     private void checkBatteryOptimization() {
@@ -109,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
         // TODO: Request for management of all files
     }
 
-    private View.OnClickListener getClickListener(final Class<?> clazz) {
+    private View.OnClickListener getPDFClickListener(final Class<?> clazz) {
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -119,12 +111,31 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
-    private View.OnClickListener getServiceClickListener(final Class clazz) {
+    private View.OnClickListener getCalcClickListener(final Class clazz) {
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, clazz);
                 startService(intent);
+            }
+        };
+    }
+    
+    private View.OnClickListener getBibleClickListener() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // TODO: Show the floating bible
+                Toast.makeText(MainActivity.this, R.string.bible_todo, Toast.LENGTH_LONG).show();
+            }
+        };
+    }
+    
+    private View.OnClickListener getClickerListener() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Toast.makeText(MainActivity.this, R.string.clicker_todo, Toast.LENGTH_LONG).show();
             }
         };
     }

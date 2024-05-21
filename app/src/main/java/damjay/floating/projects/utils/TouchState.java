@@ -1,7 +1,7 @@
 package damjay.floating.projects.utils;
 
 public class TouchState {
-    public static final int MOVE_TOLERANCE = 5;
+    public static int moveTolerance = 5;
 
     private float initialX;
     private float finalX;
@@ -41,11 +41,13 @@ public class TouchState {
     }
 
     public int updatedPositionX() {
-        return originalX + (int) getMoveX();
+        int updatedX = originalX + (int) getMoveX();
+        return updatedX < 0 ? 0 : updatedX;
     }
 
     public int updatedPositionY() {
-        return originalY + (int) getMoveY();
+        int updatedY = originalY + (int) getMoveY();
+        return updatedY < 0 ? 0 : updatedY;
     }
 
     public float getMoveX() {
@@ -57,7 +59,7 @@ public class TouchState {
     }
 
     public boolean hasMoved() {
-        return Math.abs(getMoveX()) > MOVE_TOLERANCE || Math.abs(getMoveY()) > MOVE_TOLERANCE;
+        return Math.abs(getMoveX()) > moveTolerance || Math.abs(getMoveY()) > moveTolerance;
     }
     
 }

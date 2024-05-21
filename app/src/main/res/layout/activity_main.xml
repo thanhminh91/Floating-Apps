@@ -15,7 +15,7 @@
 
 		<RelativeLayout
 			android:layout_width="0dp"
-			android:layout_height="wrap_content"
+			android:layout_height="match_parent"
 			android:id="@+id/floating_pdf"
 			android:background="@color/buttonColor"
 			android:layout_margin="10dp"
@@ -36,13 +36,14 @@
 				android:text="@string/floating_pdf"
 				android:layout_centerHorizontal="true"
 				android:paddingTop="5dp"
-				android:textColor="#FFFFFF"/>
+				android:textColor="#FFFFFF"
+				android:gravity="center"/>
 
 		</RelativeLayout>
 
 		<RelativeLayout
 			android:layout_width="0dp"
-			android:layout_height="wrap_content"
+			android:layout_height="match_parent"
 			android:id="@+id/floating_calculator"
 			android:layout_margin="10dp"
 			android:background="#00aaaa"
@@ -63,7 +64,8 @@
 				android:text="@string/floating_calc"
 				android:layout_centerHorizontal="true"
 				android:paddingTop="5dp"
-				android:textColor="#FFFFFF"/>
+				android:textColor="#FFFFFF"
+				android:gravity="center"/>
 
 		</RelativeLayout>
 
@@ -80,7 +82,7 @@
 
 		<RelativeLayout
 			android:layout_width="0dp"
-			android:layout_height="wrap_content"
+			android:layout_height="match_parent"
 			android:id="@+id/floating_bible"
 			android:background="@color/buttonColor"
 			android:layout_margin="10dp"
@@ -101,7 +103,36 @@
 				android:text="@string/floating_bible"
 				android:layout_centerHorizontal="true"
 				android:paddingTop="5dp"
-				android:textColor="#FFFFFF"/>
+				android:textColor="#FFFFFF"
+				android:gravity="center"/>
+
+		</RelativeLayout>
+
+		<RelativeLayout
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:id="@+id/floating_clicker"
+			android:background="@color/buttonColor"
+			android:layout_margin="10dp"
+			android:layout_weight="1"
+			android:padding="10dp">
+
+			<ImageView
+				android:layout_width="45dp"
+				android:layout_height="45dp"
+				android:src="@drawable/clicker_logo"
+				android:id="@+id/clickerLogo"
+				android:layout_centerHorizontal="true"/>
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_below="@+id/clickerLogo"
+				android:text="@string/floating_clicker"
+				android:layout_centerHorizontal="true"
+				android:paddingTop="5dp"
+				android:textColor="#FFFFFF"
+				android:gravity="center"/>
 
 		</RelativeLayout>
 

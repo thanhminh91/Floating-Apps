@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 public class CompoundExpression extends Expression {
     private ArrayList<Expression> expressions;
 
-    public static final char[] OPERATORS = {'\u00f7', '*', '+', '-'};
+    public static final char[] OPERATORS = {'\u00f7', '\u00d7', '+', '-'};
     public static final String[] OPERATOR_TYPE = {ExpressionType.DivideOperator, ExpressionType.MultiplyOperator, ExpressionType.PlusOperator, ExpressionType.MinusOperator};
 
     public CompoundExpression(String input) {

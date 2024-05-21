@@ -123,6 +123,7 @@ public class CalculatorService extends Service {
             @Override
             public boolean onTouch(View view, MotionEvent event) {
                 TouchState touchState = TouchState.getInstance();
+                touchState.moveTolerance = (int) (12.5f * Resources.getSystem().getDisplayMetrics().density);
                 switch (event.getAction()) {
                     case MotionEvent.ACTION_DOWN:
                         touchState.setInitialPosition(event.getRawX(), event.getRawY());

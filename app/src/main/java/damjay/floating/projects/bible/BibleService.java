@@ -7,10 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import damjay.floating.projects.R;
+import android.view.WindowManager.LayoutParams;
 
 public class BibleService extends Service {
     private WindowManager windowManager;
     private View view;
+    private WindowManager.LayoutParams params;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -24,7 +26,7 @@ public class BibleService extends Service {
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         view = LayoutInflater.from(this).inflate(R.layout.bible_layout, null);
         
-        WindowManager.LayoutParams params = new WindowManager.LayoutParams();
+        params = new WindowManager.LayoutParams(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
     }
 
     @Override
