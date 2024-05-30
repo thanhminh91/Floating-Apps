@@ -6,10 +6,12 @@ import android.content.res.Resources;
 import android.graphics.PixelFormat;
 import android.os.Build;
 import android.os.IBinder;
+import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
@@ -23,17 +25,18 @@ import damjay.floating.projects.R;
 import damjay.floating.projects.calculate.CompoundExpression;
 import damjay.floating.projects.calculate.Expression;
 import damjay.floating.projects.customadapters.CalculatorHistoryAdapter;
-import damjay.floating.projects.utils.TouchState;
 import damjay.floating.projects.utils.ViewsUtils;
 import java.util.ArrayList;
-import android.util.DisplayMetrics;
 
 public class CalculatorService extends Service {
     private View parentLayout;
     private View collapsed;
     private View expanded;
+    private View mainCalculator;
     private ListView historyList;
     private EditText editor;
+    
+    private CalculatorHistoryAdapter historyAdapter;
 
     private LayoutParams params;
     private WindowManager window;
@@ -50,13 +53,13 @@ public class CalculatorService extends Service {
         super.onCreate();
 
         getViews();
-        addTouchListeners();
         minimizeView(null);
 
         params = getLayoutParams();
         window = (WindowManager) getSystemService(WINDOW_SERVICE);
         window.addView(parentLayout, params);
 
+        addTouchListeners();
     }
 
     private LayoutParams getLayoutParams() {
@@ -77,10 +80,16 @@ public class CalculatorService extends Service {
 
     private void getViews() {
         parentLayout = LayoutInflater.from(this).inflate(R.layout.calculator_layout, null);
-
-        editor = parentLayout.findViewById(R.id.calcField);       
+        editor = parentLayout.findViewById(R.id.calcField);
         collapsed = parentLayout.findViewById(R.id.collapsedCalc);
         expanded = parentLayout.findViewById(R.id.expandedCalc);
+        mainCalculator = parentLayout.findViewById(R.id.main_calculator);
+        
+        if (historyList == null) {
+            historyList = parentLayout.findViewById(R.id.calcHistory);
+            historyAdapter = new CalculatorHistoryAdapter(this, calculatedItems);
+            historyList.setAdapter(historyAdapter);
+        }
 
         collapsed.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -116,38 +125,21 @@ public class CalculatorService extends Service {
                     expanded.getLayoutParams().width = viewWidth;
                 }
             });
+            ViewTreeObserver.OnGlobalLayoutListener layoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    int measuredHeight = mainCalculator.getMeasuredHeight();
+                    if (measuredHeight < 1) return;
+                    historyList.getLayoutParams().height = measuredHeight;
+                }
+                
+            };
+            mainCalculator.getViewTreeObserver().addOnGlobalLayoutListener(layoutListener);
+            historyList.getViewTreeObserver().addOnGlobalLayoutListener(layoutListener);
     }
 
     private void addTouchListeners() {
-        View.OnTouchListener touchListener = new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent event) {
-                TouchState touchState = TouchState.getInstance();
-                touchState.moveTolerance = (int) (12.5f * Resources.getSystem().getDisplayMetrics().density);
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        touchState.setInitialPosition(event.getRawX(), event.getRawY());
-                        touchState.setOriginalPosition(params.x, params.y);
-                        return true;
-                    case MotionEvent.ACTION_MOVE:
-                        touchState.setFinalPosition(event.getRawX(), event.getRawY());
-                        if (touchState.hasMoved()) {
-                            params.x = touchState.updatedPositionX();
-                            params.y = touchState.updatedPositionY();
-                            window.updateViewLayout(parentLayout, params);
-                            return true;
-                        }
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        if (!touchState.hasMoved()) {
-                            boolean result = view.callOnClick();
-                            return result;
-                        }
-
-                }
-                return false;
-            }
-        };
+        View.OnTouchListener touchListener = ViewsUtils.getViewTouchListener(parentLayout, window, params);
         ViewsUtils.addTouchListener(expanded, touchListener, true, true, ScrollView.class, ListView.class, null);
         ViewsUtils.addTouchListener(collapsed, touchListener, true, true);
     }
@@ -162,17 +154,22 @@ public class CalculatorService extends Service {
     }
 
     public void showHistory(final View view) {
-        if (parentLayout.findViewById(R.id.scrollCalcHistory).getVisibility() == View.VISIBLE) {
+        if (parentLayout.findViewById(R.id.calcHistory).getVisibility() == View.VISIBLE) {
             hideHistory(view);
             return;
         }
         if (historyList == null) {
             historyList = parentLayout.findViewById(R.id.calcHistory);
-            historyList.setAdapter(new CalculatorHistoryAdapter(this, calculatedItems));
+            historyAdapter = new CalculatorHistoryAdapter(this, calculatedItems);
+            historyList.setAdapter(historyAdapter);
         }
 
-        parentLayout.findViewById(R.id.scrollCalcHistory).setVisibility(View.VISIBLE);
-        parentLayout.findViewById(R.id.main_calculator).setVisibility(View.GONE);
+        View mainCalculator = parentLayout.findViewById(R.id.main_calculator);
+        View calcHistory = parentLayout.findViewById(R.id.calcHistory);
+ 
+        // Show the history views
+        calcHistory.setVisibility(View.VISIBLE);
+        mainCalculator.setVisibility(View.GONE);
 
         historyList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                 @Override
@@ -186,7 +183,7 @@ public class CalculatorService extends Service {
     }
 
     public void hideHistory(View view) {
-        parentLayout.findViewById(R.id.scrollCalcHistory).setVisibility(View.GONE);
+        parentLayout.findViewById(R.id.calcHistory).setVisibility(View.GONE);
         parentLayout.findViewById(R.id.main_calculator).setVisibility(View.VISIBLE);
     }
 
@@ -219,6 +216,9 @@ public class CalculatorService extends Service {
             Expression result = firstResult.compute();
             if (result != null) {
                 calculatedItems.add(new CalcItem(editorText, result.getExact()));
+                if (historyAdapter != null) {
+                    historyAdapter.notifyDataSetChanged();
+                }
             }
             editor.setText(result == null ? "Invalid syntax" : result.getExact());
         } catch (Throwable t) {
