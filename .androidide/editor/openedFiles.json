@@ -1,0 +1,20 @@
+{
+  "allFiles": [
+    {
+      "file": "/storage/emulated/0/AndroidIDEProjects/Floating Apps/app/src/main/java/damjay/floating/projects/FloatingPDFActivity.java",
+      "selection": {
+        "end": {
+          "column": 51,
+          "index": 13097,
+          "line": 311
+        },
+        "start": {
+          "column": 42,
+          "index": 13088,
+          "line": 311
+        }
+      }
+    }
+  ],
+  "selectedFile": "/storage/emulated/0/AndroidIDEProjects/Floating Apps/app/src/main/java/damjay/floating/projects/FloatingPDFActivity.java"
+}

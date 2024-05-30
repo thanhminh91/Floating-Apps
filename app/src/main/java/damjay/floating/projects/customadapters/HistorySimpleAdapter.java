@@ -14,7 +14,7 @@ public class HistorySimpleAdapter extends SimpleAdapter {
     private HistorySimpleAdapter.Callback callback;
     private Context context;
 
-    public HistorySimpleAdapter(Context context, ArrayList<HashMap> list, int id, String[] entries, int[] content, Callback callback) {
+    public HistorySimpleAdapter(Context context, ArrayList<HashMap<String, Object>> list, int id, String[] entries, int[] content, Callback callback) {
         super(context, list, id, entries, content);
         this.callback = callback;
         this.context = context;
@@ -36,13 +36,10 @@ public class HistorySimpleAdapter extends SimpleAdapter {
                     menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                             @Override
                             public boolean onMenuItemClick(MenuItem item) {
-                                switch (item.getItemId()) {
-                                    case R.id.open_history_file:
+                                    if (item.getItemId() == R.id.open_history_file)
                                         callback.run(position);
-                                        break;
-                                    case R.id.delete_history_file:
+                                    else if (item.getItemId() == R.id.delete_history_file)
                                         callback.delete(position);
-                                }
                                 return true;
                             }
                         });
