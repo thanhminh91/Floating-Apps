@@ -15,6 +15,7 @@
             android:layout_width="0dp"
             android:layout_height="60dp"
             android:src="@drawable/folder"
+            android:contentDescription="@string/folder_icon"
             android:layout_weight="1.5"
             android:padding="15dp"/>
         <TextView

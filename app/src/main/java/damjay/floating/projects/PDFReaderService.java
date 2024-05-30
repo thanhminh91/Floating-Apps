@@ -129,7 +129,7 @@ public class PDFReaderService extends Service {
                         lastWrittenPage = currentPage;
                     } catch (Throwable t) {
                         t.printStackTrace();
-                        Toast.makeText(PDFReaderService.this, R.string.save_page_error, Toast.LENGTH_LONG);
+                        Toast.makeText(PDFReaderService.this, R.string.save_page_error, Toast.LENGTH_LONG).show();
                     }
                 }
             });
@@ -239,7 +239,7 @@ public class PDFReaderService extends Service {
                         break;
                     case MotionEvent.ACTION_UP:
                         if (!touchState.hasMoved()) {
-                            boolean result = view.callOnClick();
+                            boolean result = view.performClick();
                             return result;
                         }
 

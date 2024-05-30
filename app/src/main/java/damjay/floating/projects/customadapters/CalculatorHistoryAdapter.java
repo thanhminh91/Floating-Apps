@@ -37,7 +37,7 @@ public class CalculatorHistoryAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View view, ViewGroup vg) {
         if (view == null) {
-            view = LayoutInflater.from(context).inflate(R.layout.calculator_history, null);
+            view = LayoutInflater.from(context).inflate(R.layout.calculator_history, vg, false);
 //            view.setTag(list.get(position));
         }
         TextView expressionView = view.findViewById(R.id.calc_history_expression);

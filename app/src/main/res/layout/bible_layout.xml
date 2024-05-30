@@ -1,48 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent"
-	android:layout_height="fill_parent"
-	android:orientation="vertical">
+     xmlns:android="http://schemas.android.com/apk/res/android"
+     android:layout_height="fill_parent"
+     android:layout_width="fill_parent"
+     android:orientation="vertical">
 
-	<LinearLayout
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:background="@color/buttonColor"
-		android:orientation="horizontal">
+    <LinearLayout
+         android:layout_height="wrap_content"
+         android:layout_width="match_parent"
+         android:background="@color/buttonColor"
+         android:orientation="horizontal">
 
-		<Button
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:layout_alignParentLeft="true"/>
+        <LinearLayout
+             android:layout_height="wrap_content"
+             android:layout_width="150dp"
+             android:orientation="horizontal"
+             android:id="@+id/prev_controls">
 
-		<TextView
-			android:layout_width="wrap_content"
-			android:layout_height="match_parent"
-			android:layout_weight="4"
-			android:id="@+id/bibleReference"
-			android:layout_centerHorizontal="true"
-			android:gravity="center"/>
+            <Button
+                 android:layout_height="wrap_content"
+                 android:layout_width="wrap_content"
+                 android:layout_weight="1"
+                 android:text="@string/prev_book" />
 
-		<Button
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_weight="1"
-			android:layout_alignParentRight="true"/>
+            <Button
+                 android:layout_height="wrap_content"
+                 android:layout_width="wrap_content"
+                 android:layout_weight="1"
+                 android:text="@string/prev_chapter" />
 
-	</LinearLayout>
+        </LinearLayout>
 
-	<ScrollView
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:minHeight="400dp">
+        <TextView
+             android:layout_height="match_parent"
+             android:layout_width="0dp"
+             android:gravity="center"
+             android:layout_weight="1"
+             android:id="@+id/bibleReference" />
 
-		<ListView
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"/>
+        <LinearLayout
+             android:layout_height="wrap_content"
+             android:layout_width="150dp"
+             android:orientation="horizontal"
+             android:layout_gravity="center_vertical"
+             android:id="@+id/next_controls">
 
-	</ScrollView>
+            <Button
+                 android:layout_height="wrap_content"
+                 android:layout_width="wrap_content"
+                 android:layout_weight="1"
+                 android:layout_gravity="center_vertical"
+                 android:text="@string/next_chapter" />
+
+            <Button
+                 android:layout_height="wrap_content"
+                 android:layout_width="wrap_content"
+                 android:layout_weight="1"
+                 android:layout_gravity="center_vertical"
+                 android:text="@string/next_book" />
+
+        </LinearLayout>
+
+        <ImageView
+             android:layout_height="wrap_content"
+             android:layout_width="wrap_content"
+             android:src="@android:drawable/ic_delete"
+             android:onClick="closeView"
+             android:layout_gravity="center_vertical"
+             android:id="@+id/closeImg" />
+
+    </LinearLayout>
+
+    <ListView
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
+    </ListView>
 
 </LinearLayout>
-

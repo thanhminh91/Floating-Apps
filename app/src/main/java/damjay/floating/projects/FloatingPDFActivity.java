@@ -77,7 +77,7 @@ public class FloatingPDFActivity extends AppCompatActivity {
             }
             File newFile = new File(getCacheDir(), name);
             if (!IOUtils.safeCopy(this, uri, newFile)) {
-                Toast.makeText(this, R.string.file_read_error, Toast.LENGTH_SHORT);
+                Toast.makeText(this, R.string.file_read_error, Toast.LENGTH_SHORT).show();
                 return false;
             }
             return openFloatingPDF(null, newFile);
@@ -151,7 +151,7 @@ public class FloatingPDFActivity extends AppCompatActivity {
 
     private void populateList() {
         ListView listView = findViewById(R.id.fileHistory);
-        ArrayList<HashMap> list = new ArrayList<>();
+        ArrayList<HashMap<String, Object>> list = new ArrayList<>();
         ArrayList<File> fileList = new ArrayList<>();
         String[] entries = {"fileName", "fileInfo"};
 
@@ -306,7 +306,13 @@ public class FloatingPDFActivity extends AppCompatActivity {
                 .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        ActivityCompat.requestPermissions(FloatingPDFActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, FILE_REQUEST_PERMISSION);
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) ActivityCompat.requestPermissions(FloatingPDFActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, FILE_REQUEST_PERMISSION);
+                        else {
+                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                            Uri uri = Uri.fromParts("package", getPackageName(), null);
+                            intent.setData(uri);
+                            startActivity(intent);
+                        }
                         closeAlertDialog();
                     }
                 })
@@ -349,6 +355,7 @@ public class FloatingPDFActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode != FILE_REQUEST_PERMISSION) return;
         if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             closeAlertDialog();

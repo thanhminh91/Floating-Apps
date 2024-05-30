@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import androidx.core.content.res.ResourcesCompat;
 import damjay.floating.projects.R;
 import damjay.floating.projects.files.FileItem;
 import damjay.floating.projects.utils.FormatUtils;
@@ -25,8 +26,7 @@ public class FileListAdapter extends BaseAdapter {
     public FileListAdapter(Context context, File folder) {
         this.context = context;
         getStorageDrives();
-        if (folder != null)
-        updatePath(folder);
+        if (folder != null) updatePath(folder);
     }
 
     private void getStorageDrives() {
@@ -108,7 +108,7 @@ public class FileListAdapter extends BaseAdapter {
     public View getView(int position, View view, ViewGroup viewGroup) {
         if (fileItems == null) return view;
         if (view == null) {
-            view = LayoutInflater.from(context).inflate(R.layout.file_items, null);
+            view = LayoutInflater.from(context).inflate(R.layout.file_items, viewGroup, false);
         }
         FileItem item = fileItems.get(position);
         FileItem.ViewLayout layout = item.getLayout();
@@ -117,9 +117,7 @@ public class FileListAdapter extends BaseAdapter {
         ImageView icon = layout.setIcon(view.findViewById(R.id.file_icon));
         int resource = item.isDirectory() ? R.drawable.folder : R.drawable.file_icon;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            icon.setImageDrawable(context.getResources().getDrawable(resource, context.getTheme()));
-        } else {
-            icon.setImageDrawable(context.getResources().getDrawable(resource));
+            icon.setImageDrawable(ResourcesCompat.getDrawable(context.getResources(), resource, context.getTheme()));
         }
         return view;
     }

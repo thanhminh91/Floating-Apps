@@ -20,7 +20,7 @@
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
 			android:textSize="18dp"
-			android:layout_alignParentTop="true"
+			android:layout_gravity="top"
 			android:id="@+id/file_name"
 			android:paddingBottom="5dp"/>
 

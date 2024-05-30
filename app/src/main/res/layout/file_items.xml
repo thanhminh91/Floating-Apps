@@ -1,49 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="wrap_content"
-	android:orientation="horizontal">
+     xmlns:android="http://schemas.android.com/apk/res/android"
+     android:layout_height="wrap_content"
+     android:layout_width="match_parent"
+     android:orientation="horizontal">
 
-	<ImageView
-		android:layout_width="0dp"
-		android:layout_height="60dp"
-		android:src="@drawable/file_icon"
-		android:id="@+id/file_icon"
-		android:layout_weight="1.5"
-		android:padding="15dp"/>
+    <ImageView
+         android:layout_height="60dp"
+         android:layout_width="0dp"
+         android:src="@drawable/file_icon"
+         android:padding="15dp"
+         android:layout_weight="1.5"
+         android:id="@+id/file_icon" />
 
-	<LinearLayout
-		android:layout_width="0dp"
-		android:layout_height="match_parent"
-		android:layout_weight="8"
-		android:orientation="vertical"
-		android:paddingLeft="10dp"
-		android:paddingRight="10dp">
+    <LinearLayout
+         android:layout_height="match_parent"
+         android:layout_width="0dp"
+         android:paddingRight="10dp"
+         android:orientation="vertical"
+         android:paddingLeft="10dp"
+         android:layout_weight="8">
 
-		<TextView
-			android:layout_width="match_parent"
-			android:layout_height="0dp"
-			android:id="@+id/fileName"
-			android:textSize="17dp"
-			android:layout_weight="1"
-			android:gravity="center_vertical"/>
+        <TextView
+             android:layout_height="0dp"
+             android:layout_width="match_parent"
+             android:gravity="center_vertical"
+             android:textSize="17dp"
+             android:layout_weight="1"
+             android:id="@+id/fileName" />
 
-		<TextView
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:id="@+id/fileInfo"
-			android:padding="3dp"/>
+        <TextView
+             android:layout_height="wrap_content"
+             android:layout_width="match_parent"
+             android:padding="3dp"
+             android:id="@+id/fileInfo" />
 
-	</LinearLayout>
+    </LinearLayout>
 
-	<ImageView
-		android:layout_width="0dp"
-		android:layout_height="match_parent"
-		android:layout_centerVertical="true"
-		android:layout_weight="0.5"
-		android:src="@drawable/menu_vertical"
-		android:layout_marginRight="10dp"/>
+    <ImageView
+         android:layout_height="match_parent"
+         android:layout_width="0dp"
+         android:src="@drawable/menu_vertical"
+         android:layout_marginRight="10dp"
+         android:layout_weight="0.5"
+         android:layout_gravity="center_vertical" />
 
 </LinearLayout>
-
