@@ -25,7 +25,7 @@ public class CompoundExpression extends Expression {
             if (character == '+' || character == '-') {
                 if (input.length() > i + 1) {
                     char nextChar = input.charAt(i + 1);
-                    if ((nextChar >= '0' && nextChar <= '9') || nextChar == '.' || nextChar == '(') {
+                    if ((nextChar >= '0' && nextChar <= '9') || nextChar == '.' || nextChar == 'E' || nextChar == '(') {
                         // Emphasizing positive or negative number
                         temp += character;
                         i++;
@@ -47,16 +47,29 @@ public class CompoundExpression extends Expression {
                 expressions.add(new CompoundExpression(input.substring(i + 1, otherPair)));
                 i = otherPair + 1;
             }
-
+            
             // Try to capture a number
+            // Check if an exponential sign starts the number
+            if (i < input.length() && input.charAt(i) == 'E') {
+                // Invalid syntax, 'E' starts the number or it follows a '+' or '-'
+                return null;
+            }
             while (i < input.length()) {
                 char currentChar = input.charAt(i);
-                if ((currentChar >= '0' && currentChar <= '9') || currentChar == '.') {
-                    // Two decimal points must not be present in the integer
-                    if (currentChar == '.' && temp.contains(".")) {
+                if ((currentChar >= '0' && currentChar <= '9') || currentChar == '.' || currentChar == 'E') {
+                    // Two decimal points or exponential signs must not be present in the integer
+                    if ((currentChar == '.' && temp.contains(".")) || (currentChar == 'E' && temp.contains("E"))) {
                         return null;
                     }
                     temp += currentChar;
+                    if (currentChar == 'E' && ++i < input.length()) {
+                        if (input.charAt(i) == '-' || input.charAt(i) == '+') {
+                            temp += input.charAt(i++);
+                        }
+                        // The next character must be a digit
+                        if (i >= input.length() || input.charAt(i) < '0' || input.charAt(i) > '9') return null;
+                        continue;
+                    }
                     i++;
                 } else {
                     break;
@@ -64,7 +77,7 @@ public class CompoundExpression extends Expression {
             }
             // Check if number capture was successful
             if (temp.length() > 0) {
-                expressions.add(Expression.createExact(temp, temp.contains(".") ? ExpressionType.Decimal : ExpressionType.Integer));
+                expressions.add(Expression.createExact(temp, temp.contains(".") || temp.contains("E") ? ExpressionType.Decimal : ExpressionType.Integer));
             }
             if (i >= input.length()) break;
 
@@ -96,6 +109,7 @@ public class CompoundExpression extends Expression {
                 }
             } else {
                 // Not an operator. What could this be?
+                System.out.println("Invalid character: '" + character + "'");
                 return null;
             }
         }
