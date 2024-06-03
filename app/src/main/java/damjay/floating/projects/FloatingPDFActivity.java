@@ -40,6 +40,8 @@ public class FloatingPDFActivity extends AppCompatActivity {
 
     private static final int FLOAT_PERMISSION_REQUEST = 100;
     private static final int FILE_REQUEST_PERMISSION = 101;
+    
+    private static DialogInterface.OnClickListener DIALOG_EXIT_LISTENER;
 
     private File[] files;
     private EditText filePath;
@@ -47,7 +49,16 @@ public class FloatingPDFActivity extends AppCompatActivity {
     public static String returnedPath;
 
     private AlertDialog alertDialog;
-
+    
+    {
+        DIALOG_EXIT_LISTENER = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        finish();
+                    }
+                };
+    }
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,26 +103,19 @@ public class FloatingPDFActivity extends AppCompatActivity {
             Button selectFiles = findViewById(R.id.browseFile);
             populateList();
 
-            loadFileButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
+            loadFileButton.setOnClickListener(v -> {
                         String text = filePath.getText().toString();
                         if (text.trim().isEmpty()) {
                             Toast.makeText(FloatingPDFActivity.this, R.string.invalid_path_message, Toast.LENGTH_SHORT).show();
                             return;
                         }
                         openFloatingPDF(new File(text), null);
-                    }                    
-                });
-            selectFiles.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
+                    });
+            selectFiles.setOnClickListener(v -> {
                         FileBrowserActivity.currentInput = filePath.getText().toString();
                         Intent intent = new Intent(FloatingPDFActivity.this, FileBrowserActivity.class);
                         startActivity(intent);
-                    }
-
-                });
+                    });
         } catch (Throwable report) {
             report.printStackTrace();
         }
@@ -174,21 +178,15 @@ public class FloatingPDFActivity extends AppCompatActivity {
             files = fileList.toArray(new File[0]);
 
             SimpleAdapter adapter = new HistorySimpleAdapter(this, list, R.layout.history_files, entries, new int[]{R.id.file_name, R.id.file_info}, new HistorySimpleAdapter.Callback() {
-
-                    @Override
-                    public void delete(final int position) {
+            public void delete(final int position) {
                         new AlertDialog.Builder(FloatingPDFActivity.this)
                             .setMessage(R.string.delete_file_confirm)
-                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialog, int id) {
+                            .setPositiveButton(android.R.string.yes, (dialog, id) -> {
                                     if (files[position].delete()) {
                                         populateList();
                                     } else {
                                         Toast.makeText(FloatingPDFActivity.this, R.string.delete_file_error, Toast.LENGTH_LONG).show();
                                     }
-
-                                }
                             })
                             .setNegativeButton(android.R.string.no, null)
                             .show();
@@ -280,20 +278,12 @@ public class FloatingPDFActivity extends AppCompatActivity {
                 .setTitle(R.string.grant_permissions)
                 .setMessage(R.string.display_permission_message)
                 .setCancelable(false)
-                .setPositiveButton(R.string.settings, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
+                .setPositiveButton(R.string.settings, (dialog, id) -> {
                         Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                                                    Uri.parse("package:" + getPackageName()));
                         startActivityForResult(intent, FLOAT_PERMISSION_REQUEST);
-                    }
-                })
-                .setNegativeButton(R.string.exit, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        finish();
-                    }
-                }).create();
+                    })
+                .setNegativeButton(R.string.exit, DIALOG_EXIT_LISTENER).create();
             alertDialog.show();
             return false;
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -303,25 +293,18 @@ public class FloatingPDFActivity extends AppCompatActivity {
                 .setTitle(R.string.grant_permissions)
                 .setMessage(R.string.files_permission_message)
                 .setCancelable(false)
-                .setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) ActivityCompat.requestPermissions(FloatingPDFActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, FILE_REQUEST_PERMISSION);
-                        else {
+                .setPositiveButton(android.R.string.ok, (dialog, id) -> {
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                            ActivityCompat.requestPermissions(FloatingPDFActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, FILE_REQUEST_PERMISSION);
+                       } else {
                             Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                             Uri uri = Uri.fromParts("package", getPackageName(), null);
                             intent.setData(uri);
                             startActivity(intent);
                         }
                         closeAlertDialog();
-                    }
-                })
-                .setNegativeButton(R.string.exit, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        finish();
-                    }
-                }).create();
+                    })
+                .setNegativeButton(R.string.exit, DIALOG_EXIT_LISTENER).create();
             alertDialog.show();
             return false;
         } else {
@@ -362,14 +345,16 @@ public class FloatingPDFActivity extends AppCompatActivity {
             viewIntent();
         } else {
             new AlertDialog.Builder(this)
-                .setMessage(R.string.permission_denied_message)
+                .setMessage(R.string.permission_denied_grant_manually)
                 .setCancelable(false)
-                .setPositiveButton(R.string.exit, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        finish();
-                    }
+                .setPositiveButton(R.string.settings, (dialog, id) -> {
+                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        Uri uri = Uri.fromParts("package", getPackageName(), null);
+                        intent.setData(uri);
+                        startActivity(intent);
+                        closeAlertDialog();
                 })
+                .setNegativeButton(R.string.exit, DIALOG_EXIT_LISTENER)
                 .show();
             // if (checkPermission())
             // viewIntent();
