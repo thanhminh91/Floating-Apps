@@ -37,6 +37,8 @@ public class CalculatorService extends Service {
     private EditText editor;
     
     private CalculatorHistoryAdapter historyAdapter;
+    
+    private int caretPosition = 1;
 
     private LayoutParams params;
     private WindowManager window;
@@ -44,7 +46,7 @@ public class CalculatorService extends Service {
     private ArrayList<CalcItem> calculatedItems = new ArrayList<>();
 
     @Override
-    public IBinder onBind(Intent p1) {
+    public IBinder onBind(Intent intent) {
         return null;
     }
 
@@ -98,34 +100,12 @@ public class CalculatorService extends Service {
                     collapsed.setVisibility(View.GONE);
                 }         
             });
+        
+        parentLayout.findViewById(R.id.calcLaunchActivity).setOnClickListener(v -> ViewsUtils.launchApp(this, MainActivity.class));
 
-        expanded.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
-                @Override
-                public void onGlobalLayout() {
-                    DisplayMetrics metrics = new DisplayMetrics();
-                    float smallestDeviceWidth;
-                    if (window != null) {
-                        window.getDefaultDisplay().getRealMetrics(metrics);
-                        smallestDeviceWidth = (float) metrics.widthPixels / metrics.density;
-                    } else {
-                        metrics = Resources.getSystem().getDisplayMetrics();
-                        smallestDeviceWidth = (float) metrics.widthPixels / metrics.density;
-                    }
-                    final float MIN_SW = 275.0f; // The minimum smallest width
-                    int viewWidth;
-                    if (smallestDeviceWidth / 2 < MIN_SW) {
-                        // If the smallest device width is less than MIN_SW, use the device width
-                        if (smallestDeviceWidth < MIN_SW) viewWidth = metrics.widthPixels;
-                        // Use the MIN_SW, convert it to width pixels
-                        else viewWidth = (int) (MIN_SW * metrics.density);
-                    } else {
-                        // Use half of the device width
-                        viewWidth = metrics.widthPixels / 2;
-                    }
-                    expanded.getLayoutParams().width = viewWidth;
-                }
-            });
-            ViewTreeObserver.OnGlobalLayoutListener layoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
+        expanded.getViewTreeObserver().addOnGlobalLayoutListener(() -> expanded.getLayoutParams().width = ViewsUtils.getViewWidth(275.0f));
+        
+        ViewTreeObserver.OnGlobalLayoutListener layoutListener = new ViewTreeObserver.OnGlobalLayoutListener() {
                 @Override
                 public void onGlobalLayout() {
                     int measuredHeight = mainCalculator.getMeasuredHeight();
@@ -142,15 +122,6 @@ public class CalculatorService extends Service {
         View.OnTouchListener touchListener = ViewsUtils.getViewTouchListener(parentLayout, window, params);
         ViewsUtils.addTouchListener(expanded, touchListener, true, true, ScrollView.class, ListView.class, null);
         ViewsUtils.addTouchListener(collapsed, touchListener, true, true);
-    }
-
-    public void launchActivity(View view) {
-        Intent intent = new Intent("android.intent.category.LAUNCHER");
-        String classPackage = MainActivity.class.getPackage().getName();
-        String fullClassName = MainActivity.class.getCanonicalName();
-        intent.setClassName(classPackage, fullClassName);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
     }
 
     public void showHistory(final View view) {
@@ -175,8 +146,13 @@ public class CalculatorService extends Service {
                 @Override
                 public void onItemClick(AdapterView<?> adapter, View childView, int position, long id) {
                     CalcItem item = (CalcItem) historyList.getItemAtPosition(position);
-                    // TODO: Insert the expression at caret position
-                    editor.setText(item.getExpression());
+                    // Insert at caret position
+                    String editorText = editor.getText().toString();
+                    int caretPosition = editor.getSelectionStart();
+                    editor.setText(editorText.substring(0, caretPosition) + item.getExpression() + editorText.substring(caretPosition));
+                    // Shift the caretPosition to the end of inserted expression
+                    editor.setSelection(caretPosition = caretPosition + item.getExpression().length());
+                    editor.requestFocus();
                     hideHistory(view);
                 }
             });
@@ -191,21 +167,76 @@ public class CalculatorService extends Service {
         expanded.setVisibility(View.GONE);
         collapsed.setVisibility(View.VISIBLE);
     }
+    
+    public void clearAction(View view) {
+        editor.setText("0");
+        editor.setSelection(caretPosition = 1);
+    }
 
     public void deleteAction(View view) {
         String input = editor.getText().toString();
         if (input.toLowerCase().startsWith("invalid")) {
-            editor.setText("0");
+            clearAction(null);
             return;
         }
-        editor.setText(input.length() == 1 ? "0" : input.substring(0, input.length() - 1));
+        if (caretPosition == 0) return;
+        if (caretPosition == input.length()) {
+            editor.setText(input.length() == 1 ? "0" : input.substring(0, input.length() - 1));
+        } else {
+            editor.setText(input.substring(0, caretPosition - 1) + input.substring(caretPosition));
+        }
+        if ("0".equals(editor.getText().toString())) {
+            editor.setSelection(caretPosition = 1);
+        } else {
+            editor.setSelection(caretPosition = (--caretPosition < 0 ? 0 : caretPosition));
+        }
+        editor.requestFocus();
     }
-
+    
+    public void caretLeft(View view) {
+        int textLength = editor.getText().length();
+        if (editor.getText().toString().toLowerCase().startsWith("invalid")) {
+            // TODO: Show the previous expression that was on the editor
+            return;
+        }
+        editor.setCursorVisible(true);
+        caretPosition = editor.getSelectionStart();
+        caretPosition = --caretPosition < 0 ? textLength : caretPosition;
+        editor.setSelection(caretPosition);
+        editor.requestFocus();
+    }
+    
+    public void caretRight(View view) {
+        int textLength = editor.getText().length();
+        if (editor.getText().toString().toLowerCase().startsWith("invalid")) {
+            // TODO: Show the previous expression that was on the editor
+            return;
+        }
+        editor.setCursorVisible(true);
+        caretPosition = editor.getSelectionStart();
+        caretPosition = ++caretPosition > textLength ? 0 : caretPosition;
+        editor.setSelection(caretPosition);
+        editor.requestFocus();
+    }
+    
     public void buttonAction(View view) {
         if (view instanceof Button) {
             Button button = (Button) view;
-            String input = editor.getText().toString();
-            editor.setText((input.equals("0") && !button.getText().toString().equals(".") ? "" : input) + "" + button.getText());
+            String fieldContent = editor.getText().toString();
+            String updatedContent;
+
+            if (caretPosition == fieldContent.length()) {
+                if (fieldContent.toLowerCase().startsWith("invalid")) {
+                    deleteAction(null);
+                    caretPosition = editor.getSelectionStart();
+                }
+                updatedContent = (fieldContent.equals("0") && !button.getText().toString().equals(".") ? "" : fieldContent) + "" + button.getText();
+            } else {
+                updatedContent = fieldContent.substring(0, caretPosition) + button.getText() + fieldContent.substring(caretPosition);
+            }
+            editor.setText(updatedContent);
+            editor.setSelection(caretPosition = (++caretPosition > updatedContent.length() ? updatedContent.length() : caretPosition));
+            editor.requestFocus();
         }
     }
 
@@ -221,6 +252,7 @@ public class CalculatorService extends Service {
                 }
             }
             editor.setText(result == null ? "Invalid syntax" : result.getExact());
+            editor.setSelection(caretPosition = editor.getText().length());
         } catch (Throwable t) {
             t.printStackTrace();
         }
