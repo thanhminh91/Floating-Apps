@@ -22,16 +22,16 @@
 			<ImageView
 				android:layout_height="30dp"
 				android:layout_width="30dp"
+				android:src="@drawable/pdf_logo"
 				android:layout_gravity="center_vertical"
-				android:id="@+id/expand_button"
-				android:src="@drawable/pdf_logo"/>
+				android:id="@+id/expand_button"/>
 
 			<ImageView
 				android:layout_height="30dp"
 				android:layout_width="30dp"
 				android:src="@android:drawable/ic_delete"
-				android:layout_gravity="center_vertical"
 				tools:ignore="ContentDescription"
+				android:layout_gravity="center_vertical"
 				android:id="@+id/close"/>
 
 		</LinearLayout>
@@ -39,16 +39,46 @@
 		<RelativeLayout
 			android:layout_height="wrap_content"
 			android:layout_width="match_parent"
-			android:orientation="horizontal"
 			android:visibility="visible"
+			android:orientation="horizontal"
 			android:id="@+id/expanded">
+
+			<LinearLayout
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:id="@+id/windowControls"
+				android:orientation="horizontal"
+				android:background="@color/buttonColor"
+				android:layout_alignParentRight="true">
+
+				<ImageView
+					android:layout_height="30sp"
+					android:src="@drawable/launch_app"
+					android:id="@+id/lauchApp"
+					android:layout_gravity="center_vertical"
+					android:layout_width="30sp"
+					android:paddingStart="5sp"
+					android:paddingEnd="5sp"/>
+
+				<ImageButton
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content"
+					android:src="@android:drawable/ic_delete"
+					android:background="@color/buttonColor"
+					android:id="@+id/collapseButton"
+					android:layout_gravity="center_vertical"
+					android:paddingStart="10sp"
+					android:paddingEnd="5sp"/>
+
+			</LinearLayout>
 
 			<LinearLayout
 				android:layout_height="wrap_content"
 				android:layout_width="match_parent"
+				android:layout_below="@+id/windowControls"
+				android:background="@color/buttonColor"
 				android:orientation="horizontal"
-				android:id="@+id/topNav"
-				android:background="@color/buttonColor">
+				android:id="@+id/topNav">
 
 				<Button
 					android:layout_height="wrap_content"
@@ -65,30 +95,30 @@
 					android:id="@+id/next_button"/>
 
 				<EditText
-					android:layout_width="0dp"
 					android:layout_height="wrap_content"
+					android:layout_width="0dp"
+					android:imeOptions="actionGo"
+					android:hint="Page"
+					android:textAlignment="center"
 					android:layout_weight="1.5"
 					android:inputType="number"
-					android:hint="Page"
-					android:imeOptions="actionGo"
-					android:id="@+id/page_number"
-					android:textAlignment="center"/>
+					android:id="@+id/page_number"/>
 
 				<Button
-					android:layout_width="0dp"
 					android:layout_height="wrap_content"
+					android:layout_width="0dp"
+					android:background="@color/buttonColor"
 					android:layout_weight="1.5"
 					android:id="@+id/page_count"
-					android:background="#6F73F0"
 					android:text=" / 0"
 					android:layout_gravity="center_vertical"/>
 
 				<Button
 					android:layout_height="wrap_content"
 					android:layout_width="0dp"
-					android:text="-"
-					android:layout_weight="1"
 					android:layout_marginLeft="20dp"
+					android:layout_weight="1"
+					android:text="-"
 					android:id="@+id/zoomout_button"/>
 
 				<Button
@@ -98,41 +128,24 @@
 					android:text="+"
 					android:id="@+id/zoomin_button"/>
 
-				<ImageView
-					android:layout_height="match_parent"
-					android:layout_width="0dp"
-					android:layout_weight="0.5"
-					android:src="@drawable/launch_app"
-					android:id="@+id/lauchApp"
-					android:layout_gravity="center_vertical"/>
-
-				<ImageButton
-					android:layout_height="wrap_content"
-					android:layout_width="0dp"
-					android:layout_weight="1"
-					android:src="@android:drawable/ic_delete"
-					android:background="#6F73F0"
-					android:id="@+id/collapseButton"
-					android:layout_gravity="center_vertical"/>
-
 			</LinearLayout>
 
 			<ScrollView
-				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
+				android:layout_width="match_parent"
 				android:layout_below="@+id/topNav"
-				android:id="@+id/imageScrollView"
-				android:background="#cccccc">
+				android:background="#cccccc"
+				android:id="@+id/imageScrollView">
 
 				<HorizontalScrollView
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content">
+					android:layout_height="wrap_content"
+					android:layout_width="wrap_content">
 
 					<ImageView
 						android:layout_height="wrap_content"
 						android:layout_width="wrap_content"
-						android:id="@+id/pdf_page"
-						android:background="#ffffff"/>
+						android:background="#ffffff"
+						android:id="@+id/pdf_page"/>
 
 				</HorizontalScrollView>
 
@@ -143,4 +156,3 @@
 	</RelativeLayout>
 
 </FrameLayout>
-
