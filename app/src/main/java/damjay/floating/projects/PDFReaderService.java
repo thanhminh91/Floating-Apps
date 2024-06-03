@@ -97,17 +97,9 @@ public class PDFReaderService extends Service {
     }
 
     private void setOnClickListener(final View collapsedView, final View expandedView, View launchApp, ImageView closeButtonCollapsed) {
-        launchApp.setOnClickListener(new View.OnClickListener(){
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent("android.intent.category.LAUNCHER");
-                    String classPackage = MainActivity.class.getPackage().getName();
-                    String fullClassName = MainActivity.class.getCanonicalName();
-                    intent.setClassName(classPackage, fullClassName);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(intent);
-                }
-            });
+        launchApp.setOnClickListener(v -> ViewsUtils.launchApp(this, MainActivity.class));
+        closeButtonCollapsed.setOnClickListener(v -> stopSelf());
+        
         closeButton.setOnClickListener(
             new View.OnClickListener() {
                 @Override
@@ -145,13 +137,6 @@ public class PDFReaderService extends Service {
                 }
             });
 
-        closeButtonCollapsed.setOnClickListener(
-            new View.OnClickListener() {
-                @Override
-                public void onClick(View view) { 
-                    stopSelf();
-                }
-            });
     }
 
     private void assignNavButtons() {
