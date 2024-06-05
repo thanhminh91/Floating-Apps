@@ -1,10 +1,19 @@
 package damjay.floating.projects.bible;
 
 import android.content.Context;
+import damjay.floating.projects.utils.ZipUtils;
 import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import damjay.floating.projects.utils.FileUtils;
 import java.io.IOException;
+import java.io.File;
 
 public class CombinedChapterBibleSource {
+    public static final String BIBLE_DATA = "Bible Data";
+    public static final String INDEX = "Index";
+        
     private Context context;
     
     // Current chapter loaded
@@ -41,11 +50,14 @@ public class CombinedChapterBibleSource {
     private char[] verseData;
     
     private int verseDataSize;
+    
+    private File biblePath;
 
-    public CombinedChapterBibleSource(Context context) throws IOException {
+    public CombinedChapterBibleSource(Context context, File biblePath) throws IOException {
         this.context = context;
         
-        DataInputStream input = new DataInputStream(context.getAssets().open("Bible Data/Index"));
+        if (!checkCreated(biblePath)) return;
+        DataInputStream input = openStream(BIBLE_DATA + "/" + INDEX);
         
         // Read in the number of books
         numberOfBooks = input.read();
@@ -88,9 +100,9 @@ public class CombinedChapterBibleSource {
                 combinedChapterIndex[bookIndex][(chapterIndex << 2) + 2] = allVersesLength;
                 combinedChapterIndex[bookIndex][(chapterIndex << 2) + 3] = input.read();
 
-                System.err.println(bookIndex + " chapter " + chapterIndex + ": " +
+                /* System.err.println(bookIndex + " chapter " + chapterIndex + ": " +
                                    verseDataOffset + ", " + allVersesLength + ", " +
-                                   combinedChapterIndex[bookIndex][(chapterIndex << 2) + 3]);
+                                   combinedChapterIndex[bookIndex][(chapterIndex << 2) + 3]);*/
 
                 verseDataOffset += allVersesLength;
             }
@@ -98,8 +110,22 @@ public class CombinedChapterBibleSource {
 
         input.close();
     }
-
-
+    
+    private boolean checkCreated(File biblePath) {
+        this.biblePath = biblePath;
+        if (!new File(biblePath, BIBLE_DATA + "/" + INDEX).exists()) {
+            File zipFile = new File(biblePath, BIBLE_DATA + ".zip");
+            try {
+                if (!FileUtils.copyStream(context.getAssets().open(BIBLE_DATA + ".zip"), new FileOutputStream(zipFile))) return false;
+            } catch (Throwable t) {
+                t.printStackTrace();
+                return false;
+            }
+            
+            return ZipUtils.extractZip(zipFile, biblePath);
+        }
+        return true;
+    }
 
     public char[] getChapter(int bookIndex, int chapterIndex) throws IOException {
         // Load the chapter if it isn't loaded
@@ -136,7 +162,7 @@ public class CombinedChapterBibleSource {
                 // Load the chapter as it will be different if either the chapter or book changed
                 //start = System.currentTimeMillis();
 
-                DataInputStream input = new DataInputStream(context.getAssets().open("Bible Data/" + shortBookNames[bookIndex] + "/" + shortBookNames[bookIndex] + " " + currentFileIndex));
+                DataInputStream input = openStream(BIBLE_DATA + "/" + shortBookNames[bookIndex] + "/" + shortBookNames[bookIndex] + " " + currentFileIndex);
 
                 int length = input.readInt();
 
@@ -218,7 +244,7 @@ public class CombinedChapterBibleSource {
 
         currentBookIndex = bookIndex;
 
-        DataInputStream input = new DataInputStream(context.getAssets().open("Bible Data/" + shortBookNames[bookIndex] + "/Index"));
+        DataInputStream input = openStream(BIBLE_DATA + "/" + shortBookNames[bookIndex] + "/" + INDEX);
 
         // Read each verse length in for each chapter
         for (int chapter = 0; chapter < numberOfChapters; chapter++) {
@@ -267,4 +293,9 @@ public class CombinedChapterBibleSource {
     public int getVerseDataSize() {
         return verseDataSize;
     }
+    
+    private DataInputStream openStream(String path) throws FileNotFoundException {
+        return new DataInputStream(new FileInputStream(new File(biblePath, path)));
+    }
+
 }

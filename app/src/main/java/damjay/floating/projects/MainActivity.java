@@ -12,6 +12,7 @@ import android.text.Html;
 import android.view.View;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import damjay.floating.projects.bible.BibleService;
 import damjay.floating.projects.calculate.CalculatorService;
 
 public class MainActivity extends AppCompatActivity {
@@ -27,8 +28,8 @@ public class MainActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(Html.fromHtml("<font color='#ffffff'>" + getResources().getString(R.string.floating_pdf) + "</font>"));
 
         findViewById(R.id.floating_pdf).setOnClickListener(getPDFClickListener(FloatingPDFActivity.class));
-        findViewById(R.id.floating_calculator).setOnClickListener(getCalcClickListener(CalculatorService.class));
-        findViewById(R.id.floating_bible).setOnClickListener(getBibleClickListener());
+        findViewById(R.id.floating_calculator).setOnClickListener(getServiceClickListener(CalculatorService.class));
+        findViewById(R.id.floating_bible).setOnClickListener(getServiceClickListener(BibleService.class));
         findViewById(R.id.floating_clicker).setOnClickListener(getClickerListener());
 
         // Request for optional optimization
@@ -111,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
-    private View.OnClickListener getCalcClickListener(final Class clazz) {
+    private View.OnClickListener getServiceClickListener(final Class clazz) {
         return new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -120,17 +121,7 @@ public class MainActivity extends AppCompatActivity {
             }
         };
     }
-    
-    private View.OnClickListener getBibleClickListener() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // TODO: Show the floating bible
-                Toast.makeText(MainActivity.this, R.string.bible_todo, Toast.LENGTH_LONG).show();
-            }
-        };
-    }
-    
+
     private View.OnClickListener getClickerListener() {
         return new View.OnClickListener() {
             @Override

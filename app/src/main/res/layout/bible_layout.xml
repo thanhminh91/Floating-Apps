@@ -1,79 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
-     xmlns:android="http://schemas.android.com/apk/res/android"
-     android:layout_height="fill_parent"
-     android:layout_width="fill_parent"
-     android:orientation="vertical">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="fill_parent"
+    android:layout_width="fill_parent"
+    android:orientation="vertical">
 
-    <LinearLayout
-         android:layout_height="wrap_content"
-         android:layout_width="match_parent"
-         android:background="@color/buttonColor"
-         android:orientation="horizontal">
-
+    <ImageView
+        android:layout_width="40sp"
+        android:layout_height="40sp"
+        android:background="@android:color/white"
+        android:src="@drawable/bible_logo"
+        android:id="@+id/minimizedBible" />
         <LinearLayout
-             android:layout_height="wrap_content"
-             android:layout_width="150dp"
-             android:orientation="horizontal"
-             android:id="@+id/prev_controls">
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:background="@color/buttonColor"
+            android:orientation="horizontal"
+            android:layout_gravity="right"
+            android:id="@+id/windowControls">
 
-            <Button
-                 android:layout_height="wrap_content"
-                 android:layout_width="wrap_content"
-                 android:layout_weight="1"
-                 android:text="@string/prev_book" />
+            <ImageView
+                android:layout_height="30sp"
+                android:layout_width="30sp"
+                android:src="@drawable/launch_app"
+                android:paddingEnd="5sp"
+                android:paddingStart="5sp"
+                android:id="@+id/bibleLauchApp"
+                android:layout_gravity="center_vertical" />
 
-            <Button
-                 android:layout_height="wrap_content"
-                 android:layout_width="wrap_content"
-                 android:layout_weight="1"
-                 android:text="@string/prev_chapter" />
+            <ImageButton
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:src="@android:drawable/ic_delete"
+                android:paddingEnd="5sp"
+                android:background="@color/buttonColor"
+                android:paddingStart="10sp"
+                android:id="@+id/bibleCloseView"
+                android:layout_gravity="center_vertical" />
 
         </LinearLayout>
 
-        <TextView
-             android:layout_height="match_parent"
-             android:layout_width="0dp"
-             android:gravity="center"
-             android:layout_weight="1"
-             android:id="@+id/bibleReference" />
-
         <LinearLayout
-             android:layout_height="wrap_content"
-             android:layout_width="150dp"
-             android:orientation="horizontal"
-             android:layout_gravity="center_vertical"
-             android:id="@+id/next_controls">
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:background="@color/biblePaddingBackground"
+            android:id="@+id/bibleNavPadding"
+            android:padding="2dp">
 
-            <Button
-                 android:layout_height="wrap_content"
-                 android:layout_width="wrap_content"
-                 android:layout_weight="1"
-                 android:layout_gravity="center_vertical"
-                 android:text="@string/next_chapter" />
+            <RelativeLayout
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:background="@color/buttonColor">
 
-            <Button
-                 android:layout_height="wrap_content"
-                 android:layout_width="wrap_content"
-                 android:layout_weight="1"
-                 android:layout_gravity="center_vertical"
-                 android:text="@string/next_book" />
+                <LinearLayout
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:background="@color/buttonColor"
+                    android:layout_centerVertical="true"
+                    android:orientation="horizontal"
+                    android:layout_centerHorizontal="true">
 
+                    <Spinner
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginStart="5dp"
+                        android:id="@+id/bibleBookSpinner" />
+
+                    <Spinner
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content"
+                        android:layout_marginEnd="5dp"
+                        android:layout_marginStart="5dp"
+                        android:id="@+id/bibleChapterSpinner" />
+
+                </LinearLayout>
+
+            </RelativeLayout>
         </LinearLayout>
 
-        <ImageView
-             android:layout_height="wrap_content"
-             android:layout_width="wrap_content"
-             android:src="@android:drawable/ic_delete"
-             android:onClick="closeView"
-             android:layout_gravity="center_vertical"
-             android:id="@+id/closeImg" />
-
-    </LinearLayout>
-
-    <ListView
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent">
-    </ListView>
-
+        <ListView
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            android:background="@color/bibleBackground"
+            android:id="@+id/bibleVerses" />
 </LinearLayout>

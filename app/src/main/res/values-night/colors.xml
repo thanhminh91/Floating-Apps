@@ -12,6 +12,8 @@
     <color name="calcButtonBackground">#000000</color>
     <color name="calcTextColor">#ffffff</color>
 
-    <!--<color name="white">#ffffff</color>
-    <color name="black">#000000</color>-->
+    <!--Floating bible colors-->
+    <color name="bibleBackground">#111111</color>
+    <color name="biblePaddingBackground">#ffffff</color>
+    <color name="bibleTextColor">#ffffff</color>
 </resources>

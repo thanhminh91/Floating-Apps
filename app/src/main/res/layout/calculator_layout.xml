@@ -27,63 +27,55 @@
             android:padding="5dp"
             android:id="@+id/topNav">
 
-            <RelativeLayout
+            <LinearLayout
                 android:layout_height="wrap_content"
-                android:layout_width="match_parent"
-                android:orientation="horizontal">
+                android:layout_width="wrap_content"
+                android:paddingLeft="3dp">
 
-                <LinearLayout
+                <ImageView
+                    android:layout_height="25dp"
+                    android:layout_width="25dp"
+                    android:src="@drawable/launch_app"
+                    android:padding="5dp"
+                    android:layout_marginRight="5dp"
+                    android:id="@+id/calcLaunchActivity"
+                    android:layout_gravity="center_vertical" />
+
+                <ImageView
+                    android:layout_height="25dp"
+                    android:layout_width="25dp"
+                    android:src="@drawable/history_icon"
+                    android:padding="5dp"
+                    android:onClick="showHistory"
+                    android:layout_marginLeft="5dp"
+                    android:layout_gravity="center_vertical" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:paddingRight="3dp"
+                android:layout_alignParentRight="true">
+
+                <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
-                    android:paddingLeft="3dp">
+                    android:paddingRight="10dp"
+                    android:onClick="minimizeView"
+                    android:textColor="@color/calcTextColor"
+                    android:paddingLeft="10dp"
+                    android:text="—"
+                    android:textStyle="bold" />
 
-                    <ImageView
-                        android:layout_height="25dp"
-                        android:layout_width="25dp"
-                        android:src="@drawable/launch_app"
-                        android:padding="5dp"
-                        android:layout_marginRight="5dp"
-                        android:id="@+id/calcLaunchActivity"
-                        android:layout_gravity="center_vertical" />
+                <ImageView
+                    android:layout_height="25dp"
+                    android:layout_width="25dp"
+                    android:src="@android:drawable/ic_delete"
+                    android:onClick="closeView"
+                    android:layout_marginLeft="7dp" />
 
-                    <ImageView
-                        android:layout_height="25dp"
-                        android:layout_width="25dp"
-                        android:src="@drawable/history_icon"
-                        android:padding="5dp"
-                        android:onClick="showHistory"
-                        android:layout_marginLeft="5dp"
-                        android:layout_gravity="center_vertical" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:paddingRight="3dp"
-                    android:layout_alignParentRight="true">
-
-                    <TextView
-                        android:layout_height="wrap_content"
-                        android:layout_width="wrap_content"
-                        android:paddingRight="10dp"
-                        android:onClick="minimizeView"
-                        android:textColor="@color/calcTextColor"
-                        android:paddingLeft="10dp"
-                        android:text="—"
-                        android:textStyle="bold" />
-
-                    <ImageView
-                        android:layout_height="25dp"
-                        android:layout_width="25dp"
-                        android:src="@android:drawable/ic_delete"
-                        android:onClick="closeView"
-                        android:layout_marginLeft="7dp" />
-
-                </LinearLayout>
-
-            </RelativeLayout>
-
+            </LinearLayout>
         </RelativeLayout>
 
         <RelativeLayout
@@ -98,7 +90,7 @@
                 android:background="@color/calcFieldBackground"
                 android:gravity="right"
                 android:paddingRight="8dp"
-                android:textSize="30dp"
+                android:textSize="30sp"
                 android:textColor="@color/calcFieldColor"
                 android:scrollHorizontally="false"
                 android:inputType="text|textMultiLine"

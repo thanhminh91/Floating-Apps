@@ -30,6 +30,8 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -138,6 +140,37 @@ public class FileUtils {
                 }
             }
         }
+    }
+    
+    public static boolean copyStream(InputStream srcStream, OutputStream destStream) {
+    	try {
+            byte[] buff = new byte[1024];
+            int length = 0;
+
+            while ((length = srcStream.read(buff)) > 0) {
+                destStream.write(buff, 0, length);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            if (srcStream != null) {
+                try {
+                    srcStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (destStream != null) {
+                try {
+                    destStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     public static void moveFile(String sourcePath, String destPath) {
