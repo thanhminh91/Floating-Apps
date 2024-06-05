@@ -61,11 +61,11 @@ public class ViewsUtils {
             ViewGroup viewGroup = (ViewGroup) parentView;
             for (int i = 0; i < viewGroup.getChildCount(); i++) {
                 View child = viewGroup.getChildAt(i);
-                if (recursive) {
+                boolean present = isPresent(child.getClass(), allowedClasses);
+                present = checkAbsent ? !present : present;
+                if (recursive && present) {
                     addTouchListener(child, listener, applyToChildren, recursive, allowedClasses);
                 } else {
-                    boolean present = isPresent(child.getClass(), allowedClasses);
-                    present = checkAbsent ? !present : present;
                     if (present) {
                         child.setOnTouchListener(listener);
                     }
@@ -121,4 +121,23 @@ public class ViewsUtils {
         }
         return viewWidth;
     }
+    
+    public static int getViewHeight(float minSmallestHeight) {
+        float smallestDeviceHeight;
+        DisplayMetrics metrics = Resources.getSystem().getDisplayMetrics();
+        smallestDeviceHeight = (float) metrics.heightPixels / metrics.density;
+
+        int viewHeight;
+        if (smallestDeviceHeight / 2 < minSmallestHeight) {
+            // If the smallest device height is less than min smallest height, use the device height
+            if (smallestDeviceHeight < minSmallestHeight) viewHeight = metrics.heightPixels;
+            // Use the min smallest height, convert it to height pixels
+            else viewHeight = (int) (minSmallestHeight * metrics.density);
+        } else {
+            // Use half of the device height
+            viewHeight = metrics.widthPixels / 2;
+        }
+        return viewHeight;
+    }
+
 }
