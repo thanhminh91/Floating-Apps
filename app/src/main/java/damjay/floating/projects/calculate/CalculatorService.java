@@ -120,7 +120,7 @@ public class CalculatorService extends Service {
 
     private void addTouchListeners() {
         View.OnTouchListener touchListener = ViewsUtils.getViewTouchListener(parentLayout, window, params);
-        ViewsUtils.addTouchListener(expanded, touchListener, true, true, ScrollView.class, ListView.class, null);
+        ViewsUtils.addTouchListener(expanded, touchListener, true, true, ListView.class, null);
         ViewsUtils.addTouchListener(collapsed, touchListener, true, true);
     }
 
@@ -136,10 +136,9 @@ public class CalculatorService extends Service {
         }
 
         View mainCalculator = parentLayout.findViewById(R.id.main_calculator);
-        View calcHistory = parentLayout.findViewById(R.id.calcHistory);
  
         // Show the history views
-        calcHistory.setVisibility(View.VISIBLE);
+        historyList.setVisibility(View.VISIBLE);
         mainCalculator.setVisibility(View.GONE);
 
         historyList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
