@@ -20,19 +20,12 @@
 			android:id="@+id/collapsed">
 
 			<ImageView
-				android:layout_height="30dp"
-				android:layout_width="30dp"
+				android:layout_height="50dp"
+				android:layout_width="50dp"
 				android:src="@drawable/pdf_logo"
 				android:layout_gravity="center_vertical"
+				android:contentDescription="@string/collapsed_pdf_page"
 				android:id="@+id/expand_button"/>
-
-			<ImageView
-				android:layout_height="30dp"
-				android:layout_width="30dp"
-				android:src="@android:drawable/ic_delete"
-				tools:ignore="ContentDescription"
-				android:layout_gravity="center_vertical"
-				android:id="@+id/close"/>
 
 		</LinearLayout>
 
@@ -49,16 +42,29 @@
 				android:id="@+id/windowControls"
 				android:orientation="horizontal"
 				android:background="@color/buttonColor"
-				android:layout_alignParentRight="true">
+				android:layout_alignParentEnd="true">
 
 				<ImageView
 					android:layout_height="30sp"
 					android:src="@drawable/launch_app"
-					android:id="@+id/lauchApp"
+					android:id="@+id/launchApp"
+					android:padding="5sp"
+					android:contentDescription="@string/launch_app"
 					android:layout_gravity="center_vertical"
 					android:layout_width="30sp"
-					android:paddingStart="5sp"
-					android:paddingEnd="5sp"/>
+					android:layout_marginStart="10sp"
+					android:layout_marginEnd="5sp"/>
+
+				<ImageView
+					android:layout_width="30sp"
+					android:layout_height="30sp"
+					android:layout_marginStart="5sp"
+					android:layout_marginEnd="5sp"
+					android:layout_gravity="center_vertical"
+					android:id="@+id/minimizePDF"
+					android:padding="5sp"
+					android:contentDescription="@string/minimize_pdf"
+					android:src="@drawable/minimize_icon"/>
 
 				<ImageButton
 					android:layout_height="wrap_content"
@@ -66,9 +72,11 @@
 					android:src="@android:drawable/ic_delete"
 					android:background="@color/buttonColor"
 					android:id="@+id/collapseButton"
+					android:padding="5sp"
+					android:contentDescription="@string/close_pdf"
 					android:layout_gravity="center_vertical"
-					android:paddingStart="10sp"
-					android:paddingEnd="5sp"/>
+					android:layout_marginStart="5sp"
+					android:layout_marginEnd="10sp"/>
 
 			</LinearLayout>
 
@@ -84,6 +92,7 @@
 					android:layout_height="wrap_content"
 					android:layout_width="0dp"
 					android:layout_weight="1"
+					android:contentDescription="@string/previous_page"
 					android:text="&lt;"
 					android:id="@+id/prev_button"/>
 
@@ -91,6 +100,7 @@
 					android:layout_height="wrap_content"
 					android:layout_width="0dp"
 					android:layout_weight="1"
+					android:contentDescription="@string/next_page"
 					android:text="&gt;"
 					android:id="@+id/next_button"/>
 
@@ -116,8 +126,9 @@
 				<Button
 					android:layout_height="wrap_content"
 					android:layout_width="0dp"
-					android:layout_marginLeft="20dp"
+					android:layout_marginStart="20dp"
 					android:layout_weight="1"
+					android:contentDescription="@string/zoom_out"
 					android:text="-"
 					android:id="@+id/zoomout_button"/>
 
@@ -125,6 +136,7 @@
 					android:layout_height="wrap_content"
 					android:layout_width="0dp"
 					android:layout_weight="1"
+					android:contentDescription="@string/zoom_in"
 					android:text="+"
 					android:id="@+id/zoomin_button"/>
 
@@ -145,6 +157,7 @@
 						android:layout_height="wrap_content"
 						android:layout_width="wrap_content"
 						android:background="#ffffff"
+						android:contentDescription="@string/pdf_page"
 						android:id="@+id/pdf_page"/>
 
 				</HorizontalScrollView>

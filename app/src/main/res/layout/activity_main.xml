@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:tools="http://schemas.android.com/tools"
 	android:layout_height="match_parent"
 	android:layout_width="match_parent">
 
@@ -79,6 +78,7 @@
         android:baselineAligned="false"
 		android:orientation="horizontal"
 		android:weightSum="2"
+		android:id="@+id/secondLine"
 		android:layout_below="@+id/firstLine"
 		android:padding="10dp">
 
@@ -140,5 +140,43 @@
 
 	</LinearLayout>
 
-</RelativeLayout>
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_centerHorizontal="true"
+		android:baselineAligned="false"
+		android:orientation="horizontal"
+		android:weightSum="2"
+		android:layout_below="@+id/secondLine"
+		android:padding="10dp">
+	<RelativeLayout
+		android:layout_width="0dp"
+		android:layout_height="match_parent"
+		android:id="@+id/floating_timer"
+		android:background="@color/buttonColor"
+		android:layout_margin="10dp"
+		android:layout_weight="1"
+		android:padding="10dp">
 
+		<ImageView
+			android:layout_width="45dp"
+			android:layout_height="45dp"
+			android:src="@drawable/floating_timer"
+			android:id="@+id/timerLogo"
+			android:layout_centerHorizontal="true"/>
+
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_below="@+id/timerLogo"
+			android:text="@string/floating_timer"
+			android:layout_centerHorizontal="true"
+			android:paddingTop="5dp"
+			android:textColor="#FFFFFF"
+			android:gravity="center"/>
+
+	</RelativeLayout>
+
+</LinearLayout>
+
+</RelativeLayout>

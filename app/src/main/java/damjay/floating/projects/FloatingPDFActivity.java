@@ -12,7 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
-import android.text.Html;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -28,6 +27,7 @@ import damjay.floating.projects.customadapters.HistorySimpleAdapter;
 import damjay.floating.projects.files.FileBrowserActivity;
 import damjay.floating.projects.utils.FormatUtils;
 import damjay.floating.projects.utils.IOUtils;
+import damjay.floating.projects.utils.ViewsUtils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -66,8 +66,8 @@ public class FloatingPDFActivity extends AppCompatActivity {
             return;
         }
         setContentView(R.layout.activity_floating_pdf);
-        getSupportActionBar().setTitle(Html.fromHtml("<font color='#ffffff'>" + getResources().getString(R.string.floating_pdf) + "</font>"));
-        // AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM);
+        getSupportActionBar().setTitle(R.string.floating_pdf);
+        
         initializeViews();
         checkPermission();
         if (savedInstanceState == null) {
@@ -240,27 +240,6 @@ public class FloatingPDFActivity extends AppCompatActivity {
         return null;
     }
 
-    public static void openDownloads(@NonNull Activity activity) {
-        if (isSamsung()) {
-            Intent intent = activity.getPackageManager()
-                .getLaunchIntentForPackage("com.sec.android.app.myfiles");
-            intent.setAction("samsung.myfiles.intent.action.LAUNCH_MY_FILES");
-            intent.putExtra("samsung.myfiles.intent.extra.START_PATH", 
-                            getDownloadsFile().getPath());
-            activity.startActivity(intent);
-        } else activity.startActivity(new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS));
-    }
-
-    public static boolean isSamsung() {
-        String manufacturer = Build.MANUFACTURER;
-        if (manufacturer != null) return manufacturer.toLowerCase().equals("samsung");
-        return false;
-    }
-
-    public static File getDownloadsFile() {
-        return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
-    }
-
     public boolean launchService() {
         if (checkPermission()) {
             startService(new Intent(this, PDFReaderService.class));
@@ -297,10 +276,7 @@ public class FloatingPDFActivity extends AppCompatActivity {
                         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
                             ActivityCompat.requestPermissions(FloatingPDFActivity.this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE}, FILE_REQUEST_PERMISSION);
                        } else {
-                            Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                            Uri uri = Uri.fromParts("package", getPackageName(), null);
-                            intent.setData(uri);
-                            startActivity(intent);
+                            ViewsUtils.openAppInfo(this, getClass().getPackage().getName());
                         }
                         closeAlertDialog();
                     })
@@ -348,7 +324,11 @@ public class FloatingPDFActivity extends AppCompatActivity {
                 .setMessage(R.string.permission_denied_grant_manually)
                 .setCancelable(false)
                 .setPositiveButton(R.string.settings, (dialog, id) -> {
-                        Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                        Intent intent;
+                        if (Build.VERSION.SDK_INT >= 30)
+                           intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                       else
+                            intent = new Intent(Settings.ACTION_APPLICATION_SETTINGS);
                         Uri uri = Uri.fromParts("package", getPackageName(), null);
                         intent.setData(uri);
                         startActivity(intent);

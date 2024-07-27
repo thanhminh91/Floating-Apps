@@ -16,4 +16,12 @@
     <color name="bibleBackground">#111111</color>
     <color name="biblePaddingBackground">#ffffff</color>
     <color name="bibleTextColor">#ffffff</color>
+    
+    <!--Chat activity colors-->
+    <color name="myChatBackground">#080</color>
+    <color name="chatText">#fff</color>
+    <color name="otherChatBackground">#000</color>
+
+    <color name="timerTextColor">#fff</color>
+    <color name="timerBackground">#000</color>
 </resources>

@@ -8,7 +8,6 @@ import android.os.IBinder;
 
 import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
@@ -65,6 +64,7 @@ public class BibleService extends Service {
         bookList = view.findViewById(R.id.bibleBookSpinner);
         chapterList = view.findViewById(R.id.bibleChapterSpinner);
         view.findViewById(R.id.minimizedBible).setOnClickListener((v) -> maximizeView());
+        view.findViewById(R.id.minimizeBible).setOnClickListener((v) -> minimizeView());
         setArrayAdapters();
     }
     
@@ -118,7 +118,7 @@ public class BibleService extends Service {
 
     private void initViewSize() {
         view.findViewById(R.id.bibleCloseView).setOnClickListener(v -> stopSelf());
-        view.findViewById(R.id.bibleLauchApp)
+        view.findViewById(R.id.bibleLaunchApp)
                 .setOnClickListener(v -> ViewsUtils.launchApp(this, MainActivity.class));
 
         view.getViewTreeObserver()
@@ -170,7 +170,7 @@ public class BibleService extends Service {
                         LayoutParams.FLAG_NOT_FOCUSABLE,
                         PixelFormat.TRANSLUCENT);
 
-        params.gravity = Gravity.TOP | Gravity.LEFT;
+        params.gravity = Gravity.TOP | Gravity.START;
         params.x = 0;
         params.y = 100;
         return params;
@@ -178,7 +178,7 @@ public class BibleService extends Service {
 
     private void addTouchListeners(View view) {
         View.OnTouchListener listener =
-                ViewsUtils.getViewTouchListener(view, windowManager, params);
+                ViewsUtils.getViewTouchListener(this, view, windowManager, params);
         ViewsUtils.addTouchListener(
                 view, listener, true, true, ListView.class, Spinner.class, null);
     }

@@ -1,0 +1,50 @@
+{
+  "allFiles": [
+    {
+      "file": "/storage/emulated/0/AndroidIDEProjects/Floating Apps/app/src/test/java/damjay/floating/projects/calculate/CompoundExpressionTest.java",
+      "selection": {
+        "end": {
+          "column": 15,
+          "index": 60,
+          "line": 2
+        },
+        "start": {
+          "column": 15,
+          "index": 60,
+          "line": 2
+        }
+      }
+    },
+    {
+      "file": "/storage/emulated/0/AndroidIDEProjects/Floating Apps/app/src/main/java/damjay/floating/projects/calculate/CompoundExpression.java",
+      "selection": {
+        "end": {
+          "column": 0,
+          "index": 0,
+          "line": 0
+        },
+        "start": {
+          "column": 0,
+          "index": 0,
+          "line": 0
+        }
+      }
+    },
+    {
+      "file": "/storage/emulated/0/AndroidIDEProjects/Floating Apps/app/src/main/java/damjay/floating/projects/calculate/CalculatorService.java",
+      "selection": {
+        "end": {
+          "column": 0,
+          "index": 0,
+          "line": 0
+        },
+        "start": {
+          "column": 0,
+          "index": 0,
+          "line": 0
+        }
+      }
+    }
+  ],
+  "selectedFile": "/storage/emulated/0/AndroidIDEProjects/Floating Apps/app/src/test/java/damjay/floating/projects/calculate/CompoundExpressionTest.java"
+}

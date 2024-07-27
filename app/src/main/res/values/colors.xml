@@ -3,17 +3,28 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="buttonColor">#00aaaa</color>
+    <color name="buttonColor">#0aa</color>
     
     <!--Floating calculator colors-->
-    <color name="calcBackground">#dddddd</color>
-    <color name="calcFieldBackground">#ffffff</color>
-    <color name="calcFieldColor">#000000</color>
-    <color name="calcButtonBackground">#cccccc</color>
-    <color name="calcTextColor">#000000</color>
+    <color name="calcBackground">#ddd</color>
+    <color name="calcFieldBackground">#fff</color>
+    <color name="calcFieldColor">#000</color>
+    <color name="calcButtonBackground">#ccc</color>
+    <color name="calcTextColor">#000</color>
     
     <!--Floating bible colors-->
-    <color name="bibleBackground">#dddddd</color>
-    <color name="biblePaddingBackground">#000000</color>
-    <color name="bibleTextColor">#000000</color>
+    <color name="bibleBackground">#ddd</color>
+    <color name="biblePaddingBackground">#000</color>
+    <color name="bibleTextColor">#000</color>
+    
+    <color name="clickerButtonText">#fff</color>
+    
+    <!--Chat activity colors-->
+    <color name="myChatBackground">#9fb</color>
+    <color name="chatText">#000</color>
+    <color name="otherChatBackground">#fff</color>
+
+    <!--Floating Timer colors-->
+    <color name="timerTextColor">#000</color>
+    <color name="timerBackground">#ffffff</color>
 </resources>

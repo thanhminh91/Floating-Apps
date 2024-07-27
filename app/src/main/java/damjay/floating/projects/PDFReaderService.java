@@ -1,5 +1,6 @@
 package damjay.floating.projects;
 
+import android.annotation.SuppressLint;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -9,9 +10,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.os.ParcelFileDescriptor;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
@@ -24,13 +23,11 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
-import damjay.floating.projects.FloatingPDFActivity;
-import damjay.floating.projects.MainActivity;
-import damjay.floating.projects.R;
+
+import androidx.annotation.RequiresApi;
+
 import damjay.floating.projects.utils.ImageScaler;
-import damjay.floating.projects.utils.TouchState;
 import damjay.floating.projects.utils.ViewsUtils;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -39,6 +36,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+@RequiresApi(21)
 public class PDFReaderService extends Service {
     private View pdfLayout;
     private WindowManager windowManager;
@@ -48,6 +46,7 @@ public class PDFReaderService extends Service {
 
     private PdfRenderer inputPdf;
     private PdfRenderer.Page page;
+    private Bitmap pageBitmap;
     private ImageScaler zoomView;
 
     public int currentPage = 0;
@@ -58,12 +57,14 @@ public class PDFReaderService extends Service {
     private ImageButton closeButton;
     private View expandButton;
     private ImageView pageImageView;
+    private View minimizeButton;
 
     @Override
     public IBinder onBind(Intent intent) {
         return null;
     }
 
+    @SuppressLint("InflateParams")
     @Override
     public void onCreate() {
         try {
@@ -80,12 +81,12 @@ public class PDFReaderService extends Service {
             View expandedView = pdfLayout.findViewById(R.id.expanded);
             expandedView.setVisibility(View.GONE);
 
-            ImageView closeButtonCollapsed = pdfLayout.findViewById(R.id.close);
-            View launchApp = pdfLayout.findViewById(R.id.lauchApp);
+            View launchApp = pdfLayout.findViewById(R.id.launchApp);
             closeButton = pdfLayout.findViewById(R.id.collapseButton);
+            minimizeButton = pdfLayout.findViewById(R.id.minimizePDF);
             expandButton = pdfLayout.findViewById(R.id.expand_button);
 
-            setOnClickListener(collapsedView, expandedView, launchApp, closeButtonCollapsed);
+            setOnClickListener(collapsedView, expandedView, launchApp);
             setTouchListener(params, collapsedView, expandedView);
 
             assignNavButtons();
@@ -96,11 +97,11 @@ public class PDFReaderService extends Service {
 
     }
 
-    private void setOnClickListener(final View collapsedView, final View expandedView, View launchApp, ImageView closeButtonCollapsed) {
+    private void setOnClickListener(final View collapsedView, final View expandedView, View launchApp) {
         launchApp.setOnClickListener(v -> ViewsUtils.launchApp(this, MainActivity.class));
-        closeButtonCollapsed.setOnClickListener(v -> stopSelf());
+        closeButton.setOnClickListener(v -> stopSelf());
         
-        closeButton.setOnClickListener(
+        minimizeButton.setOnClickListener(
             new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -126,16 +127,13 @@ public class PDFReaderService extends Service {
                 }
             });
 
-        expandButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    collapsedView.setVisibility(View.GONE);
-                    expandedView.setVisibility(View.VISIBLE);
-                    params.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL;
-                    windowManager.updateViewLayout(pdfLayout, params);
-                    initializePdfPage();
-                }
-            });
+        expandButton.setOnClickListener(view -> {
+            collapsedView.setVisibility(View.GONE);
+            expandedView.setVisibility(View.VISIBLE);
+            params.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL;
+            windowManager.updateViewLayout(pdfLayout, params);
+            initializePdfPage();
+        });
 
     }
 
@@ -153,86 +151,47 @@ public class PDFReaderService extends Service {
         if (pageField == null) {
             pageField = pdfLayout.findViewById(R.id.page_number);
         }
-        pageField.setOnEditorActionListener(new EditText.OnEditorActionListener() {
-                @Override
-                public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
-                    if (actionId == EditorInfo.IME_ACTION_GO) {
-                        String text = pageField.getText().toString();
-                        if (!text.isEmpty()) {
-                            int pageNumber = Integer.parseInt(text) - 1;
-                            if (pageNumber < 0 || pageNumber > pageCount) {
-                                Toast.makeText(PDFReaderService.this, R.string.invalid_page_number, Toast.LENGTH_SHORT).show();
-                            } else {
-                                currentPage = pageNumber;
-                                initializePdfPage();
-                            }
-                        }
+        pageField.setOnEditorActionListener((view, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_GO) {
+                String text = pageField.getText().toString();
+                if (!text.isEmpty()) {
+                    int pageNumber = Integer.parseInt(text) - 1;
+                    if (pageNumber < 0 || pageNumber > pageCount) {
+                        Toast.makeText(PDFReaderService.this, R.string.invalid_page_number, Toast.LENGTH_SHORT).show();
+                    } else {
+                        currentPage = pageNumber;
+                        initializePdfPage();
                     }
-                    return false;
                 }
-            });
+            }
+            return false;
+        });
     }
 
     private View.OnClickListener getNavListener(final boolean next) {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (pageCount > 0) {
-                    currentPage += next ? 1 : -1;
-                    if (currentPage >= pageCount || currentPage < 0) {
-                        currentPage = next ? 0 : pageCount - 1;
-                    }
+        return view -> {
+            if (pageCount > 0) {
+                currentPage += next ? 1 : -1;
+                if (currentPage >= pageCount || currentPage < 0) {
+                    currentPage = next ? 0 : pageCount - 1;
                 }
-                initializePdfPage();
             }
-
+            initializePdfPage();
         };
     }
 
     private View.OnClickListener getZoomListener(final boolean zoomIn) {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (zoomView != null) {
-                    if (zoomIn) zoomView.increaseScale();
-                    else zoomView.decreaseScale();
-                    initializePdfPage(1);
-                }
+        return view -> {
+            if (zoomView != null) {
+                if (zoomIn) zoomView.increaseScale();
+                else zoomView.decreaseScale();
+                initializePdfPage(1);
             }
-
         };
     }
 
-    private void setTouchListener(final WindowManager.LayoutParams params, final View collapsedView, final View expandedView) {
-        View.OnTouchListener touchListener = new View.OnTouchListener() {
-            TouchState touchState = TouchState.newInstance();
-            @Override
-            public boolean onTouch(View view, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                        touchState.setInitialPosition(event.getRawX(), event.getRawY());
-                        touchState.setOriginalPosition(params.x, params.y);
-                        return true;
-                    case MotionEvent.ACTION_MOVE:
-                        touchState.setFinalPosition(event.getRawX(), event.getRawY());
-                        if (touchState.hasMoved()) {
-                            params.x = touchState.updatedPositionX();
-                            params.y = touchState.updatedPositionY();
-                            windowManager.updateViewLayout(pdfLayout, params);
-                            return true;
-                        }
-                        break;
-                    case MotionEvent.ACTION_UP:
-                        if (!touchState.hasMoved()) {
-                            boolean result = view.performClick();
-                            return result;
-                        }
-
-                }
-                return false;
-            }
-        };
-
+    private void setTouchListener(WindowManager.LayoutParams params, View collapsedView, View expandedView) {
+        View.OnTouchListener touchListener = ViewsUtils.getViewTouchListener(this, pdfLayout, windowManager, params);
         ViewsUtils.addTouchListener(expandedView, touchListener, true, true, ImageButton.class, Button.class, RelativeLayout.class, LinearLayout.class);
         ViewsUtils.addTouchListener(collapsedView, touchListener, true, true);
     }
@@ -240,6 +199,10 @@ public class PDFReaderService extends Service {
     private void initializePdfPage(final int... zoom) {
         if (inputPdf == null && !initializeInputPdf()) {
             Toast.makeText(this, R.string.null_pdf_error, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (pageBitmap != null && pageImageView != null && zoom.length > 0) {
+            pageImageView.setImageBitmap(zoomView.getScaled(pageBitmap));
             return;
         }
         if (pageCount == -1) {
@@ -254,12 +217,12 @@ public class PDFReaderService extends Service {
         if (currentPage >= pageCount) currentPage = 0;
         if (currentPage < pageCount) {
             page = inputPdf.openPage(currentPage);
-            final Bitmap bitmap = Bitmap.createBitmap(page.getWidth(), page.getHeight(), Bitmap.Config.ARGB_8888);
+            pageBitmap = Bitmap.createBitmap(page.getWidth(), page.getHeight(), Bitmap.Config.ARGB_8888);
 
             if (zoomView == null) {
                 zoomView = new ImageScaler();
             }
-            page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
+            page.render(pageBitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
 
             if (pageImageView == null) {
                 pageImageView = pdfLayout.findViewById(R.id.pdf_page);
@@ -272,18 +235,18 @@ public class PDFReaderService extends Service {
             view.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
                     @Override
                     public void onGlobalLayout() {
-                        view.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                        view.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                         ViewGroup.LayoutParams params = view.getLayoutParams();
-                        params.height = (bitmap.getHeight() * view.getMeasuredWidth()) / bitmap.getWidth();
+                        params.height = (pageBitmap.getHeight() * view.getMeasuredWidth()) / pageBitmap.getWidth();
 
                         if (zoomView != null && zoom.length == 0) {
-                            zoomView.setDefaultMinScale((float) params.height / (float) bitmap.getHeight());
+                            zoomView.setDefaultMinScale((float) params.height / (float)pageBitmap.getHeight());
                             if (currentPage == 0) zoomView.setScale(zoomView.getDefaultMinScale());
-                            pageImageView.setImageBitmap(zoomView.getScaled(bitmap));
+                            pageImageView.setImageBitmap(zoomView.getScaled(pageBitmap));
                         }
                     }
                 });
-            pageImageView.setImageBitmap(zoomView.getScaled(bitmap));
+            pageImageView.setImageBitmap(zoomView.getScaled(pageBitmap));
             pageField.setText("" + (currentPage + 1));
         } else {
             Toast.makeText(this, R.string.pdf_page_error, Toast.LENGTH_SHORT).show();
@@ -305,7 +268,7 @@ public class PDFReaderService extends Service {
         try {
             ParcelFileDescriptor descriptor = ParcelFileDescriptor.open(pdfFile, ParcelFileDescriptor.MODE_READ_ONLY);
             inputPdf = new PdfRenderer(descriptor);
-            if (inputPdf != null) return true;
+            return true;
         } catch (Throwable t) {
             t.printStackTrace();
         }
@@ -359,7 +322,7 @@ public class PDFReaderService extends Service {
             LayoutParams.FLAG_NOT_FOCUSABLE,
             PixelFormat.TRANSLUCENT);
 
-        params.gravity = Gravity.TOP | Gravity.LEFT;
+        params.gravity = Gravity.TOP | Gravity.START;
         params.x = 0;
         params.y = 100;
         return params;

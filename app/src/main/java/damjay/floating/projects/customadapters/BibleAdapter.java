@@ -1,25 +1,25 @@
 package damjay.floating.projects.customadapters;
 
 import android.content.Context;
-import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-import damjay.floating.projects.R;
-import damjay.floating.projects.bible.CombinedChapterBibleSource;
+
 import java.io.IOException;
 import java.util.ArrayList;
 
+import damjay.floating.projects.R;
+import damjay.floating.projects.bible.CombinedChapterBibleSource;
+
 public class BibleAdapter extends BaseAdapter {
-    private Context context;
+    private final Context context;
     private CombinedChapterBibleSource bibleSource;
 
-    private ArrayList<String> versesList = new ArrayList<>();
+    private final ArrayList<String> versesList = new ArrayList<>();
 
     private int curBookIndex;
-    private int curChapterIndex;
 
     public BibleAdapter(Context context) {
         this.context = context;
@@ -28,7 +28,6 @@ public class BibleAdapter extends BaseAdapter {
 
     public void makeChapter(int bookIndex, int chapterIndex) {
         curBookIndex = bookIndex;
-        curChapterIndex = chapterIndex;
         if (bibleSource == null) {
             try {
                 bibleSource = new CombinedChapterBibleSource(context, context.getFilesDir());
@@ -38,7 +37,7 @@ public class BibleAdapter extends BaseAdapter {
             }
         }
         try {
-            loadVerses(curBookIndex, curChapterIndex);
+            loadVerses(curBookIndex, chapterIndex);
         } catch (Throwable t) {
             t.printStackTrace();
         }
@@ -57,7 +56,7 @@ public class BibleAdapter extends BaseAdapter {
                             verseIndices[i << 1],
                             verseIndices[(i << 1) + 1] - verseIndices[i << 1]));
         }
-        System.out.println("From loadVerses(): " + versesList.get(0));
+        // System.out.println("From loadVerses(): " + versesList.get(0));
     }
 
     public int getCurrentBookIndex() {

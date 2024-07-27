@@ -6,13 +6,11 @@ import java.io.FileOutputStream;
 import java.util.zip.ZipFile;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 
 public class ZipUtils {
 
     public static boolean extractZip(File file, File outputDir) {
-        try {
-            ZipFile zipFile = new ZipFile(file);
+        try(ZipFile zipFile = new ZipFile(file)) {
             Enumeration<ZipEntry> zipEntries = (Enumeration<ZipEntry>) zipFile.entries();
             while (zipEntries.hasMoreElements()) {
                 ZipEntry curEntry = zipEntries.nextElement();

@@ -1,36 +1,37 @@
 package damjay.floating.projects;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.provider.Settings;
-import android.text.Html;
 import android.view.View;
 import android.widget.Toast;
+
 import androidx.appcompat.app.AppCompatActivity;
+import damjay.floating.projects.autoclicker.activity.ModeSelectorActivity;
 import damjay.floating.projects.bible.BibleService;
 import damjay.floating.projects.calculate.CalculatorService;
+import damjay.floating.projects.timer.TimerService;
 
 public class MainActivity extends AppCompatActivity {
     public static final int FLOAT_PERMISSION_REQUEST = 100;
 
     private AlertDialog alertDialog;
 
+    // TODO: Don't make granting Display over other apps permission too strict
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        getSupportActionBar().setTitle(Html.fromHtml("<font color='#ffffff'>" + getResources().getString(R.string.floating_pdf) + "</font>"));
-
-        findViewById(R.id.floating_pdf).setOnClickListener(getPDFClickListener(FloatingPDFActivity.class));
+        findViewById(R.id.floating_pdf).setOnClickListener(Build.VERSION.SDK_INT < 21 ? v -> Toast.makeText(this, R.string.pdf_not_supported, Toast.LENGTH_LONG).show() : getActivityClickListener(FloatingPDFActivity.class));
         findViewById(R.id.floating_calculator).setOnClickListener(getServiceClickListener(CalculatorService.class));
         findViewById(R.id.floating_bible).setOnClickListener(getServiceClickListener(BibleService.class));
-        findViewById(R.id.floating_clicker).setOnClickListener(getClickerListener());
+        findViewById(R.id.floating_timer).setOnClickListener(getServiceClickListener(TimerService.class));
+        findViewById(R.id.floating_clicker).setOnClickListener(getActivityClickListener(ModeSelectorActivity.class));
 
         // Request for optional optimization
         checkBatteryOptimization();
@@ -46,22 +47,16 @@ public class MainActivity extends AppCompatActivity {
             if (alertDialog != null) return;
             alertDialog = new AlertDialog.Builder(this)
                 .setMessage(R.string.ignore_battery_optimization)
-                .setPositiveButton(R.string.settings, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        Intent intent = new Intent();
-                        intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
-                        intent.setData(Uri.parse("package:" + getPackageName()));
-                        closeAlertDialog();
-                        startActivity(intent);
-                    }
+                .setPositiveButton(R.string.settings, (dialog, id) -> {
+                    Intent intent = new Intent();
+                    intent.setAction(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
+                    intent.setData(Uri.parse("package:" + getPackageName()));
+                    closeAlertDialog();
+                    startActivity(intent);
                 })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        closeAlertDialog();
-                        checkPermissions();
-                    }
+                .setNegativeButton(R.string.cancel, (dialog, id) -> {
+                    closeAlertDialog();
+                    checkPermissions();
                 })
                 .setCancelable(false)
                 .create();
@@ -72,62 +67,39 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private boolean checkPermissions() {
-        // Check if display over apps permission is emabled
+        // Check if display over apps permission is enabled
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(this)) {
             if (alertDialog != null) return false;
             alertDialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.grant_permissions)
                 .setMessage(R.string.display_permission_message)
                 .setCancelable(false)
-                .setPositiveButton(R.string.settings, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                                                   Uri.parse("package:" + getPackageName()));
-                        startActivityForResult(intent, FLOAT_PERMISSION_REQUEST);
-                    }
+                .setPositiveButton(R.string.settings, (dialog, id) -> {
+                    closeAlertDialog();
+                    Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                               Uri.parse("package:" + getPackageName()));
+                    startActivityForResult(intent, FLOAT_PERMISSION_REQUEST);
                 })
-                .setNegativeButton(R.string.exit, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        finish();
-                    }
-                }).create();
+                .setNegativeButton(R.string.exit, (dialog, id) -> finish()).create();
             alertDialog.show();
             return false;
         } else {
             closeAlertDialog();
             return true;
         }
-        // TODO: Request for management of all files
     }
 
-    private View.OnClickListener getPDFClickListener(final Class<?> clazz) {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, clazz);
-                startActivity(intent);
-            }
+    private View.OnClickListener getActivityClickListener(final Class<?> clazz) {
+        return view -> {
+            Intent intent = new Intent(MainActivity.this, clazz);
+            startActivity(intent);
         };
     }
 
-    private View.OnClickListener getServiceClickListener(final Class clazz) {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, clazz);
-                startService(intent);
-            }
-        };
-    }
-
-    private View.OnClickListener getClickerListener() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(MainActivity.this, R.string.clicker_todo, Toast.LENGTH_LONG).show();
-            }
+    private View.OnClickListener getServiceClickListener(final Class<?> clazz) {
+        return view -> {
+            Intent intent = new Intent(MainActivity.this, clazz);
+            startService(intent);
         };
     }
 
@@ -135,13 +107,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == FLOAT_PERMISSION_REQUEST && resultCode == RESULT_OK) {
+        /*if (requestCode == FLOAT_PERMISSION_REQUEST && resultCode == RESULT_OK) {
             closeAlertDialog();
-        } else {
+        } else {*/
             if (checkPermissions()) {
                 closeAlertDialog();
             }
-        }
+        //}
     }
 
     private void closeAlertDialog() {

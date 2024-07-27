@@ -57,27 +57,11 @@ public class CalculatorService extends Service {
         getViews();
         minimizeView(null);
 
-        params = getLayoutParams();
+        params = ViewsUtils.getFloatingLayoutParams();
         window = (WindowManager) getSystemService(WINDOW_SERVICE);
         window.addView(parentLayout, params);
 
         addTouchListeners();
-    }
-
-    private LayoutParams getLayoutParams() {
-        int type = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O ? LayoutParams.TYPE_APPLICATION_OVERLAY : LayoutParams.TYPE_PHONE;
-        
-        LayoutParams params = new LayoutParams(
-            LayoutParams.WRAP_CONTENT,
-            LayoutParams.WRAP_CONTENT,
-            type,
-            LayoutParams.FLAG_NOT_FOCUSABLE,
-            PixelFormat.TRANSLUCENT);
-
-        params.gravity = Gravity.TOP | Gravity.LEFT;
-        params.x = 0;
-        params.y = 100;
-        return params;
     }
 
     private void getViews() {
@@ -93,13 +77,10 @@ public class CalculatorService extends Service {
             historyList.setAdapter(historyAdapter);
         }
 
-        collapsed.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    expanded.setVisibility(View.VISIBLE);
-                    collapsed.setVisibility(View.GONE);
-                }         
-            });
+        collapsed.setOnClickListener(view -> {
+            expanded.setVisibility(View.VISIBLE);
+            collapsed.setVisibility(View.GONE);
+        });
         
         parentLayout.findViewById(R.id.calcLaunchActivity).setOnClickListener(v -> ViewsUtils.launchApp(this, MainActivity.class));
 
@@ -116,10 +97,11 @@ public class CalculatorService extends Service {
             };
             mainCalculator.getViewTreeObserver().addOnGlobalLayoutListener(layoutListener);
             historyList.getViewTreeObserver().addOnGlobalLayoutListener(layoutListener);
+            editor.setSelection(caretPosition = editor.getText().length());
     }
 
     private void addTouchListeners() {
-        View.OnTouchListener touchListener = ViewsUtils.getViewTouchListener(parentLayout, window, params);
+        View.OnTouchListener touchListener = ViewsUtils.getViewTouchListener(this, parentLayout, window, params);
         ViewsUtils.addTouchListener(expanded, touchListener, true, true, ListView.class, null);
         ViewsUtils.addTouchListener(collapsed, touchListener, true, true);
     }
@@ -141,20 +123,21 @@ public class CalculatorService extends Service {
         historyList.setVisibility(View.VISIBLE);
         mainCalculator.setVisibility(View.GONE);
 
-        historyList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> adapter, View childView, int position, long id) {
-                    CalcItem item = (CalcItem) historyList.getItemAtPosition(position);
-                    // Insert at caret position
-                    String editorText = editor.getText().toString();
-                    int caretPosition = editor.getSelectionStart();
-                    editor.setText(editorText.substring(0, caretPosition) + item.getExpression() + editorText.substring(caretPosition));
-                    // Shift the caretPosition to the end of inserted expression
-                    editor.setSelection(caretPosition = caretPosition + item.getExpression().length());
-                    editor.requestFocus();
-                    hideHistory(view);
-                }
-            });
+        historyList.setOnItemClickListener((adapter, childView, position, id) -> {
+            CalcItem item = (CalcItem) historyList.getItemAtPosition(position);
+            // Insert at caret position
+            String editorText = editor.getText().toString();
+            int caretPosition = editor.getSelectionStart();
+            if (caretPosition == 1 && "0".equals(editorText)) {
+                editor.setText(item.getExpression());
+                caretPosition--;
+            } else
+                editor.setText(editorText.substring(0, caretPosition) + item.getExpression() + editorText.substring(caretPosition));
+            // Shift the caretPosition to the end of inserted expression
+            editor.setSelection(caretPosition = caretPosition + item.getExpression().length());
+            editor.requestFocus();
+            hideHistory(view);
+        });
     }
 
     public void hideHistory(View view) {
@@ -174,10 +157,11 @@ public class CalculatorService extends Service {
 
     public void deleteAction(View view) {
         String input = editor.getText().toString();
-        if (input.toLowerCase().startsWith("invalid")) {
+        if (input.startsWith(getResources().getString(R.string.invalid_syntax))) {
             clearAction(null);
             return;
         }
+        caretPosition = editor.getSelectionStart();
         if (caretPosition == 0) return;
         if (caretPosition == input.length()) {
             editor.setText(input.length() == 1 ? "0" : input.substring(0, input.length() - 1));
@@ -194,7 +178,7 @@ public class CalculatorService extends Service {
     
     public void caretLeft(View view) {
         int textLength = editor.getText().length();
-        if (editor.getText().toString().toLowerCase().startsWith("invalid")) {
+        if (editor.getText().toString().startsWith(getResources().getString(R.string.invalid_syntax))) {
             // TODO: Show the previous expression that was on the editor
             return;
         }
@@ -207,7 +191,7 @@ public class CalculatorService extends Service {
     
     public void caretRight(View view) {
         int textLength = editor.getText().length();
-        if (editor.getText().toString().toLowerCase().startsWith("invalid")) {
+        if (editor.getText().toString().startsWith(getResources().getString(R.string.invalid_syntax))) {
             // TODO: Show the previous expression that was on the editor
             return;
         }
@@ -223,12 +207,13 @@ public class CalculatorService extends Service {
             Button button = (Button) view;
             String fieldContent = editor.getText().toString();
             String updatedContent;
-
+            
+            caretPosition = editor.getSelectionStart();
+            if (fieldContent.startsWith(getResources().getString(R.string.invalid_syntax))) {
+                deleteAction(null);
+                caretPosition = editor.getSelectionStart();
+            }
             if (caretPosition == fieldContent.length()) {
-                if (fieldContent.toLowerCase().startsWith("invalid")) {
-                    deleteAction(null);
-                    caretPosition = editor.getSelectionStart();
-                }
                 updatedContent = (fieldContent.equals("0") && !button.getText().toString().equals(".") ? "" : fieldContent) + "" + button.getText();
             } else {
                 updatedContent = fieldContent.substring(0, caretPosition) + button.getText() + fieldContent.substring(caretPosition);
@@ -250,7 +235,7 @@ public class CalculatorService extends Service {
                     historyAdapter.notifyDataSetChanged();
                 }
             }
-            editor.setText(result == null ? "Invalid syntax" : result.getExact());
+            editor.setText(result == null ? getResources().getString(R.string.invalid_syntax) : result.getExact());
             editor.setSelection(caretPosition = editor.getText().length());
         } catch (Throwable t) {
             t.printStackTrace();

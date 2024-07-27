@@ -9,7 +9,8 @@
         android:layout_height="40dp"
         android:layout_width="40dp"
         android:src="@drawable/simple_calc"
-        android:id="@+id/collapsedCalc" />
+        android:id="@+id/collapsedCalc"
+        android:contentDescription="@string/collapsed_calculator_icon"/>
 
     <LinearLayout
         android:layout_height="wrap_content"
@@ -37,8 +38,9 @@
                     android:layout_width="25dp"
                     android:src="@drawable/launch_app"
                     android:padding="5dp"
-                    android:layout_marginRight="5dp"
+                    android:layout_marginEnd="5dp"
                     android:id="@+id/calcLaunchActivity"
+                    android:contentDescription="@string/launch_app"
                     android:layout_gravity="center_vertical" />
 
                 <ImageView
@@ -47,7 +49,8 @@
                     android:src="@drawable/history_icon"
                     android:padding="5dp"
                     android:onClick="showHistory"
-                    android:layout_marginLeft="5dp"
+                    android:layout_marginStart="5dp"
+                    android:contentDescription="@string/calculator_history"
                     android:layout_gravity="center_vertical" />
 
             </LinearLayout>
@@ -55,25 +58,27 @@
             <LinearLayout
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
-                android:paddingRight="3dp"
+                android:paddingEnd="3dp"
                 android:layout_alignParentRight="true">
 
-                <TextView
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:paddingRight="10dp"
+                <ImageView
+                    android:layout_height="25dp"
+                    android:layout_width="25dp"
+                    android:layout_marginEnd="10dp"
                     android:onClick="minimizeView"
                     android:textColor="@color/calcTextColor"
-                    android:paddingLeft="10dp"
-                    android:text="—"
-                    android:textStyle="bold" />
+                    android:paddingStart="10dp"
+                    android:paddingEnd="4dp"
+                    android:contentDescription="@string/minimize_calc"
+                    android:src="@drawable/minimize_icon" />
 
                 <ImageView
                     android:layout_height="25dp"
                     android:layout_width="25dp"
                     android:src="@android:drawable/ic_delete"
                     android:onClick="closeView"
-                    android:layout_marginLeft="7dp" />
+                    android:contentDescription="@string/close_calc"
+                    android:paddingStart="5dp" />
 
             </LinearLayout>
         </RelativeLayout>
@@ -88,8 +93,8 @@
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:background="@color/calcFieldBackground"
-                android:gravity="right"
-                android:paddingRight="8dp"
+                android:gravity="end"
+                android:paddingEnd="8dp"
                 android:textSize="30sp"
                 android:textColor="@color/calcFieldColor"
                 android:scrollHorizontally="false"
@@ -113,6 +118,7 @@
                     android:layout_margin="8dp"
                     android:onClick="caretLeft"
                     android:textColor="@color/calcTextColor"
+                    android:contentDescription="@string/caret_left"
                     android:layout_weight="1"
                     android:text="&lt;" />
 
@@ -122,6 +128,7 @@
                     android:background="@color/buttonColor"
                     android:layout_margin="8dp"
                     android:onClick="caretRight"
+                    android:contentDescription="@string/caret_right"
                     android:textColor="@color/calcTextColor"
                     android:layout_weight="1"
                     android:text="&gt;" />
@@ -133,8 +140,9 @@
                     android:layout_margin="8dp"
                     android:onClick="clearAction"
                     android:textColor="@color/calcTextColor"
+                    android:contentDescription="@string/clear"
                     android:layout_weight="1"
-                    android:text="CLR" />
+                    android:text="@string/clear_calc_text" />
 
 
             </LinearLayout>
@@ -156,7 +164,8 @@
                     android:onClick="deleteAction"
                     android:textColor="@color/calcTextColor"
                     android:layout_weight="1"
-                    android:text="DEL" />
+                    android:contentDescription="@string/delete"
+                    android:text="@string/del" />
 
                 <Button
                     android:layout_height="match_parent"

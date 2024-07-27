@@ -1,20 +1,22 @@
 package damjay.floating.projects.bible;
 
 import android.content.Context;
-import damjay.floating.projects.utils.ZipUtils;
+
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import damjay.floating.projects.utils.FileUtils;
 import java.io.IOException;
-import java.io.File;
+
+import damjay.floating.projects.utils.FileUtils;
+import damjay.floating.projects.utils.ZipUtils;
 
 public class CombinedChapterBibleSource {
     public static final String BIBLE_DATA = "Bible Data";
     public static final String INDEX = "Index";
         
-    private Context context;
+    private final Context context;
     
     // Current chapter loaded
     private int currentBookIndex = -1;

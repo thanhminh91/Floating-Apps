@@ -3,7 +3,6 @@ package damjay.floating.projects.files;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.text.Html;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -24,7 +23,7 @@ public class FileBrowserActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_file_browser);
 
-        getSupportActionBar().setTitle(Html.fromHtml("<font color='#ffffff'>" + getResources().getString(R.string.floating_pdf) + "</font>"));
+        getSupportActionBar().setTitle(R.string.floating_pdf);
 
         fileList = findViewById(R.id.fileList);
         View upButton = findViewById(R.id.traverseUp);
