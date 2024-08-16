@@ -27,14 +27,15 @@ import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
-import damjay.floating.projects.utils.ImageScaler;
-import damjay.floating.projects.utils.ViewsUtils;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+import damjay.floating.projects.utils.ImageScaler;
+import damjay.floating.projects.utils.ViewsUtils;
 
 @RequiresApi(21)
 public class PDFReaderService extends Service {
@@ -58,6 +59,7 @@ public class PDFReaderService extends Service {
     private View expandButton;
     private ImageView pageImageView;
     private View minimizeButton;
+    private View toggleFocus;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -84,6 +86,7 @@ public class PDFReaderService extends Service {
             View launchApp = pdfLayout.findViewById(R.id.launchApp);
             closeButton = pdfLayout.findViewById(R.id.collapseButton);
             minimizeButton = pdfLayout.findViewById(R.id.minimizePDF);
+            toggleFocus = pdfLayout.findViewById(R.id.toggleFocus);
             expandButton = pdfLayout.findViewById(R.id.expand_button);
 
             setOnClickListener(collapsedView, expandedView, launchApp);
@@ -133,6 +136,11 @@ public class PDFReaderService extends Service {
             params.flags = LayoutParams.FLAG_NOT_TOUCH_MODAL;
             windowManager.updateViewLayout(pdfLayout, params);
             initializePdfPage();
+        });
+
+        toggleFocus.setOnClickListener(view -> {
+            params.flags = params.flags == LayoutParams.FLAG_NOT_FOCUSABLE ? LayoutParams.FLAG_NOT_TOUCH_MODAL : LayoutParams.FLAG_NOT_FOCUSABLE;
+            windowManager.updateViewLayout(pdfLayout, params);
         });
 
     }

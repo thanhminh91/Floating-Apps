@@ -35,51 +35,72 @@
 			android:visibility="visible"
 			android:orientation="horizontal"
 			android:id="@+id/expanded">
-
-			<LinearLayout
-				android:layout_width="wrap_content"
+			<RelativeLayout
+				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
-				android:id="@+id/windowControls"
-				android:orientation="horizontal"
-				android:background="@color/buttonColor"
-				android:layout_alignParentEnd="true">
-
-				<ImageView
-					android:layout_height="30sp"
-					android:src="@drawable/launch_app"
-					android:id="@+id/launchApp"
-					android:padding="5sp"
-					android:contentDescription="@string/launch_app"
-					android:layout_gravity="center_vertical"
-					android:layout_width="30sp"
-					android:layout_marginStart="10sp"
-					android:layout_marginEnd="5sp"/>
-
-				<ImageView
-					android:layout_width="30sp"
-					android:layout_height="30sp"
-					android:layout_marginStart="5sp"
-					android:layout_marginEnd="5sp"
-					android:layout_gravity="center_vertical"
-					android:id="@+id/minimizePDF"
-					android:padding="5sp"
-					android:contentDescription="@string/minimize_pdf"
-					android:src="@drawable/minimize_icon"/>
-
-				<ImageButton
-					android:layout_height="wrap_content"
+				android:id="@+id/windowControls">
+				<LinearLayout
 					android:layout_width="wrap_content"
-					android:src="@android:drawable/ic_delete"
+					android:layout_height="wrap_content"
+					android:orientation="horizontal"
 					android:background="@color/buttonColor"
-					android:id="@+id/collapseButton"
-					android:padding="5sp"
-					android:contentDescription="@string/close_pdf"
-					android:layout_gravity="center_vertical"
-					android:layout_marginStart="5sp"
-					android:layout_marginEnd="10sp"/>
+					android:layout_alignParentStart="true">
 
-			</LinearLayout>
+					<ImageView
+						android:layout_height="30sp"
+						android:src="@drawable/launch_app"
+						android:id="@+id/launchApp"
+						android:padding="5sp"
+						android:contentDescription="@string/launch_app"
+						android:layout_gravity="center_vertical"
+						android:layout_width="30sp"
+						android:layout_marginStart="10sp"
+						android:layout_marginEnd="5sp"/>
 
+					<ImageView
+						android:layout_width="30sp"
+						android:layout_height="30sp"
+						android:layout_marginStart="5sp"
+						android:layout_marginEnd="10sp"
+						android:layout_gravity="center_vertical"
+						android:id="@+id/toggleFocus"
+						android:padding="5sp"
+						android:contentDescription="@string/minimize_pdf"
+						android:src="@drawable/toggle_focus"/>
+				</LinearLayout>
+
+				<LinearLayout
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:orientation="horizontal"
+					android:background="@color/buttonColor"
+					android:layout_alignParentEnd="true">
+
+					<ImageView
+						android:layout_width="30sp"
+						android:layout_height="30sp"
+						android:layout_marginStart="10sp"
+						android:layout_marginEnd="5sp"
+						android:layout_gravity="center_vertical"
+						android:id="@+id/minimizePDF"
+						android:padding="5sp"
+						android:contentDescription="@string/minimize_pdf"
+						android:src="@drawable/minimize_icon"/>
+
+					<ImageButton
+						android:layout_height="30sp"
+						android:layout_width="30sp"
+						android:src="@android:drawable/ic_delete"
+						android:background="@color/buttonColor"
+						android:id="@+id/collapseButton"
+						android:padding="5sp"
+						android:contentDescription="@string/close_pdf"
+						android:layout_gravity="center_vertical"
+						android:layout_marginStart="5sp"
+						android:layout_marginEnd="10sp"/>
+
+				</LinearLayout>
+			</RelativeLayout>
 			<LinearLayout
 				android:layout_height="wrap_content"
 				android:layout_width="match_parent"
