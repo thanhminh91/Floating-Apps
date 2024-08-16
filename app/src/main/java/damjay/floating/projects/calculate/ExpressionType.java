@@ -7,5 +7,6 @@ public final class ExpressionType {
     public static final String PlusOperator = "PlusOperator";
     public static final String DivideOperator = "DivideOperator";
     public static final String MinusOperator = "MinusOperator";
+    public static final String PowerOperator = "PowerOperator";
     public static final String CompoundExpression = "CompoundExpression";
 }
