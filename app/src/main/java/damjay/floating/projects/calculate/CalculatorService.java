@@ -2,31 +2,22 @@ package damjay.floating.projects.calculate;
 
 import android.app.Service;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.PixelFormat;
-import android.os.Build;
 import android.os.IBinder;
-import android.util.DisplayMetrics;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.WindowManager;
 import android.view.WindowManager.LayoutParams;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.ScrollView;
+
+import java.util.ArrayList;
+
 import damjay.floating.projects.MainActivity;
 import damjay.floating.projects.R;
-import damjay.floating.projects.calculate.CompoundExpression;
-import damjay.floating.projects.calculate.Expression;
 import damjay.floating.projects.customadapters.CalculatorHistoryAdapter;
 import damjay.floating.projects.utils.ViewsUtils;
-import java.util.ArrayList;
 
 public class CalculatorService extends Service {
     private View parentLayout;
@@ -44,6 +35,8 @@ public class CalculatorService extends Service {
     private WindowManager window;
 
     private ArrayList<CalcItem> calculatedItems = new ArrayList<>();
+
+    private String previousInvalidExpression;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -179,7 +172,9 @@ public class CalculatorService extends Service {
     public void caretLeft(View view) {
         int textLength = editor.getText().length();
         if (editor.getText().toString().startsWith(getResources().getString(R.string.invalid_syntax))) {
-            // TODO: Show the previous expression that was on the editor
+            if (previousInvalidExpression != null)
+                editor.setText(previousInvalidExpression);
+            previousInvalidExpression = null;
             return;
         }
         editor.setCursorVisible(true);
@@ -192,7 +187,9 @@ public class CalculatorService extends Service {
     public void caretRight(View view) {
         int textLength = editor.getText().length();
         if (editor.getText().toString().startsWith(getResources().getString(R.string.invalid_syntax))) {
-            // TODO: Show the previous expression that was on the editor
+            if (previousInvalidExpression != null)
+                editor.setText(previousInvalidExpression);
+            previousInvalidExpression = null;
             return;
         }
         editor.setCursorVisible(true);
@@ -227,6 +224,8 @@ public class CalculatorService extends Service {
     public void computeCalculation(View view) {
         try {
             String editorText = editor.getText().toString();
+            if (editorText.startsWith(getResources().getString(R.string.invalid_syntax)))
+                return;
             CompoundExpression firstResult = new CompoundExpression(editorText);
             Expression result = firstResult.compute();
             if (result != null) {
@@ -236,6 +235,7 @@ public class CalculatorService extends Service {
                 }
             }
             editor.setText(result == null ? getResources().getString(R.string.invalid_syntax) : result.getExact());
+            previousInvalidExpression = editorText;
             editor.setSelection(caretPosition = editor.getText().length());
         } catch (Throwable t) {
             t.printStackTrace();

@@ -144,6 +144,17 @@
                     android:layout_weight="1"
                     android:text="@string/clear_calc_text" />
 
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:background="@color/calcButtonBackground"
+                    android:contentDescription="@string/delete"
+                    android:onClick="deleteAction"
+                    android:text="@string/del"
+                    android:textColor="@color/calcTextColor" />
+
 
             </LinearLayout>
 
@@ -155,17 +166,6 @@
                 android:orientation="horizontal"
                 android:onClick="buttonAction"
                 android:id="@+id/operatorLine">
-
-                <Button
-                    android:layout_height="match_parent"
-                    android:layout_width="0dp"
-                    android:background="@color/calcButtonBackground"
-                    android:layout_margin="8dp"
-                    android:onClick="deleteAction"
-                    android:textColor="@color/calcTextColor"
-                    android:layout_weight="1"
-                    android:contentDescription="@string/delete"
-                    android:text="@string/del" />
 
                 <Button
                     android:layout_height="match_parent"
@@ -186,6 +186,17 @@
                     android:textColor="@color/calcTextColor"
                     android:layout_weight="1"
                     android:text=")" />
+
+                <Button
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_margin="8dp"
+                    android:layout_weight="1"
+                    android:background="@color/calcButtonBackground"
+                    android:contentDescription="@string/to_power"
+                    android:onClick="buttonAction"
+                    android:text="^"
+                    android:textColor="@color/calcTextColor" />
 
                 <Button
                     android:layout_height="match_parent"
