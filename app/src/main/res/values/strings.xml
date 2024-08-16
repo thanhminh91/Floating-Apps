@@ -95,4 +95,7 @@
     <string name="maximize_timer">Maximize Timer</string>
     <string name="pause">Pause</string>
     <string name="stop">Stop</string>
+    <string name="floating_music_player">Floating Music Player</string>
+    <string name="to_power">Raised to power</string>
+    <string name="floating_music_coming">Floating Music is coming soon.</string>
 </resources>

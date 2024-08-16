@@ -176,7 +176,35 @@
 			android:gravity="center"/>
 
 	</RelativeLayout>
+		<RelativeLayout
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:id="@+id/floating_music"
+			android:background="@color/buttonColor"
+			android:layout_margin="10dp"
+			android:layout_weight="1"
+			android:padding="10dp">
 
-</LinearLayout>
+			<ImageView
+				android:layout_width="45dp"
+				android:layout_height="45dp"
+				android:src="@drawable/music_logo"
+				android:id="@+id/musicLogo"
+				android:layout_centerHorizontal="true"/>
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_below="@+id/musicLogo"
+				android:text="@string/floating_music_player"
+				android:layout_centerHorizontal="true"
+				android:paddingTop="5dp"
+				android:textColor="#FFFFFF"
+				android:gravity="center"/>
+
+		</RelativeLayout>
+
+
+	</LinearLayout>
 
 </RelativeLayout>

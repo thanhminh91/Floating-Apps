@@ -25,6 +25,7 @@
     <color name="otherChatBackground">#fff</color>
 
     <!--Floating Timer colors-->
-    <color name="timerTextColor">#000</color>
+    <color name="scheduleTimerColor">#000</color>
+    <color name="timerButtonTextColor">#fff</color>
     <color name="timerBackground">#ffffff</color>
 </resources>

@@ -78,6 +78,7 @@ public class TimerService extends Service {
         view.findViewById(R.id.new_timer).setOnClickListener(getShowClickListener(R.id.new_timer_expanded));
         view.findViewById(R.id.schedule_timer).setOnClickListener(getShowClickListener(R.id.repeating_timer_expanded));
         view.findViewById(R.id.back_to_timer_mode).setOnClickListener(getShowClickListener(R.id.select_timer_mode));
+        view.findViewById(R.id.cancel_repeating_timer).setOnClickListener(getShowClickListener(R.id.select_timer_mode));
     }
 
     private View.OnClickListener getShowClickListener(int visibleView) {

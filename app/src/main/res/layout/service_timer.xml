@@ -74,7 +74,7 @@
                     android:paddingTop="10dp"
                     android:paddingBottom="10dp"
                     android:text="@string/schedule_timer"
-                    android:textColor="@color/timerTextColor"
+                    android:textColor="@color/scheduleTimerColor"
                     android:textSize="30sp"
                     android:textStyle="bold" />
 
@@ -107,7 +107,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/new_timer_expanded"
+                android:layout_below="@+id/select_timer_mode"
                 android:orientation="vertical">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="00:00:00"
+                    android:layout_gravity="center_horizontal"
+                    android:textStyle="bold"
+                    android:textColor="@color/scheduleTimerColor"
+                    android:textSize="30sp"/>
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -116,13 +130,17 @@
                     <Button
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_margin="10sp"
                         android:text="@string/ok"
+                        android:textColor="@color/timerButtonTextColor"
                         android:background="@drawable/round_button"/>
                     <Button
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_margin="10sp"
                         android:id="@+id/back_to_timer_mode"
                         android:text="@string/cancel"
+                        android:textColor="@color/timerButtonTextColor"
                         android:background="@drawable/round_button"/>
                 </LinearLayout>
             </LinearLayout>
@@ -131,6 +149,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:id="@+id/repeating_timer_expanded"
+                android:layout_below="@+id/new_timer_expanded"
                 android:orientation="vertical">
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -140,13 +159,17 @@
                     <Button
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_margin="10sp"
                         android:text="@string/ok"
+                        android:textColor="@color/timerButtonTextColor"
                         android:background="@drawable/round_button"/>
                     <Button
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:id="@id/back_to_timer_mode"
+                        android:layout_margin="10sp"
+                        android:id="@+id/cancel_repeating_timer"
                         android:text="@string/cancel"
+                        android:textColor="@color/timerButtonTextColor"
                         android:background="@drawable/round_button"/>
                 </LinearLayout>
             </LinearLayout>
@@ -154,6 +177,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_below="@+id/repeating_timer_expanded"
                 android:id="@+id/counting_timer_view"
                 android:orientation="vertical">
                 <LinearLayout
@@ -164,17 +188,23 @@
                     <Button
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_margin="5sp"
                         android:text="@string/pause"
+                        android:textColor="@color/timerButtonTextColor"
                         android:background="@drawable/round_button"/>
                     <Button
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_margin="5sp"
                         android:text="@string/stop"
+                        android:textColor="@color/timerButtonTextColor"
                         android:background="@drawable/round_button"/>
                     <Button
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_margin="5sp"
                         android:text="@string/back"
+                        android:textColor="@color/timerButtonTextColor"
                         android:background="@drawable/round_button"/>
                 </LinearLayout>
             </LinearLayout>

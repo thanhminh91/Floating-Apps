@@ -22,6 +22,6 @@
     <color name="chatText">#fff</color>
     <color name="otherChatBackground">#000</color>
 
-    <color name="timerTextColor">#fff</color>
+    <color name="scheduleTimerColor">#fff</color>
     <color name="timerBackground">#000</color>
 </resources>
