@@ -141,45 +141,88 @@
 	</LinearLayout>
 
 	<LinearLayout
+		android:id="@+id/thirdLine"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/secondLine"
+		android:layout_marginTop="-4dp"
+		android:baselineAligned="false"
+		android:orientation="horizontal"
+		android:padding="10dp"
+		android:weightSum="2">
+
+		<RelativeLayout
+			android:id="@+id/floating_timer"
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_margin="10dp"
+			android:layout_weight="1"
+			android:background="@color/buttonColor"
+			android:padding="10dp">
+
+			<ImageView
+				android:id="@+id/timerLogo"
+				android:layout_width="45dp"
+				android:layout_height="45dp"
+				android:layout_centerHorizontal="true"
+				android:src="@drawable/floating_timer" />
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_below="@+id/timerLogo"
+				android:layout_centerHorizontal="true"
+				android:gravity="center"
+				android:paddingTop="5dp"
+				android:text="@string/floating_timer"
+				android:textColor="#FFFFFF" />
+
+		</RelativeLayout>
+
+		<RelativeLayout
+			android:id="@+id/floating_music"
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_margin="10dp"
+			android:layout_weight="1"
+			android:background="@color/buttonColor"
+			android:padding="10dp">
+
+			<ImageView
+				android:id="@+id/musicLogo"
+				android:layout_width="45dp"
+				android:layout_height="45dp"
+				android:layout_centerHorizontal="true"
+				android:src="@drawable/music_logo" />
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_below="@+id/musicLogo"
+				android:layout_centerHorizontal="true"
+				android:gravity="center"
+				android:paddingTop="5dp"
+				android:text="@string/floating_music_player"
+				android:textColor="#FFFFFF" />
+
+		</RelativeLayout>
+
+	</LinearLayout>
+
+	<LinearLayout
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_centerHorizontal="true"
 		android:baselineAligned="false"
 		android:orientation="horizontal"
 		android:weightSum="2"
-		android:layout_below="@+id/secondLine"
+		android:id="@+id/fourthLine"
+		android:layout_below="@+id/thirdLine"
 		android:padding="10dp">
-	<RelativeLayout
-		android:layout_width="0dp"
-		android:layout_height="match_parent"
-		android:id="@+id/floating_timer"
-		android:background="@color/buttonColor"
-		android:layout_margin="10dp"
-		android:layout_weight="1"
-		android:padding="10dp">
-
-		<ImageView
-			android:layout_width="45dp"
-			android:layout_height="45dp"
-			android:src="@drawable/floating_timer"
-			android:id="@+id/timerLogo"
-			android:layout_centerHorizontal="true"/>
-
-		<TextView
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_below="@+id/timerLogo"
-			android:text="@string/floating_timer"
-			android:layout_centerHorizontal="true"
-			android:paddingTop="5dp"
-			android:textColor="#FFFFFF"
-			android:gravity="center"/>
-
-	</RelativeLayout>
 		<RelativeLayout
 			android:layout_width="0dp"
 			android:layout_height="match_parent"
-			android:id="@+id/floating_music"
+			android:id="@+id/floating_copyTextField"
 			android:background="@color/buttonColor"
 			android:layout_margin="10dp"
 			android:layout_weight="1"
@@ -188,15 +231,42 @@
 			<ImageView
 				android:layout_width="45dp"
 				android:layout_height="45dp"
-				android:src="@drawable/music_logo"
-				android:id="@+id/musicLogo"
+				android:src="@drawable/copy_logo"
+				android:id="@+id/copyLogo"
 				android:layout_centerHorizontal="true"/>
 
 			<TextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_below="@+id/musicLogo"
-				android:text="@string/floating_music_player"
+				android:layout_below="@+id/copyLogo"
+				android:text="@string/floating_copy_text_field"
+				android:layout_centerHorizontal="true"
+				android:paddingTop="5dp"
+				android:textColor="#FFFFFF"
+				android:gravity="center"/>
+
+		</RelativeLayout>
+		<RelativeLayout
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:id="@+id/floating_browser"
+			android:background="@color/buttonColor"
+			android:layout_margin="10dp"
+			android:layout_weight="1"
+			android:padding="10dp">
+
+			<ImageView
+				android:layout_width="45dp"
+				android:layout_height="45dp"
+				android:src="@drawable/browse_logo"
+				android:id="@+id/browserLogo"
+				android:layout_centerHorizontal="true"/>
+
+			<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_below="@+id/browserLogo"
+				android:text="@string/floating_web_browser"
 				android:layout_centerHorizontal="true"
 				android:paddingTop="5dp"
 				android:textColor="#FFFFFF"

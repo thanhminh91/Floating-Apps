@@ -33,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.floating_timer).setOnClickListener(getServiceClickListener(TimerService.class));
         findViewById(R.id.floating_clicker).setOnClickListener(getActivityClickListener(ModeSelectorActivity.class));
         findViewById(R.id.floating_music).setOnClickListener(v -> Toast.makeText(this, R.string.floating_music_coming, Toast.LENGTH_LONG).show());
+        findViewById(R.id.floating_copyTextField).setOnClickListener(v -> Toast.makeText(this, R.string.floating_copy_text_coming, Toast.LENGTH_LONG).show());
+        findViewById(R.id.floating_browser).setOnClickListener(v -> Toast.makeText(this, R.string.floating_browser_coming, Toast.LENGTH_LONG).show());
 
         // Request for optional optimization
         checkBatteryOptimization();
