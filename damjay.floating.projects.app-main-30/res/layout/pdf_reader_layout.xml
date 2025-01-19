@@ -1,0 +1,7 @@
+<ImageButton
+    android:id="@+id/toggleButton"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:src="@drawable/toggle_focus"
+    android:contentDescription="@string/toggle_focus_desc"
+/> 

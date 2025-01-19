@@ -31,7 +31,13 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.floating_calculator).setOnClickListener(getServiceClickListener(CalculatorService.class));
         findViewById(R.id.floating_bible).setOnClickListener(getServiceClickListener(BibleService.class));
         findViewById(R.id.floating_timer).setOnClickListener(getServiceClickListener(TimerService.class));
-        findViewById(R.id.floating_clicker).setOnClickListener(getActivityClickListener(ModeSelectorActivity.class));
+        findViewById(R.id.floating_clicker).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, NumberRangeActivity.class);
+                startActivity(intent);
+            }
+        });
         findViewById(R.id.floating_music).setOnClickListener(v -> Toast.makeText(this, R.string.floating_music_coming, Toast.LENGTH_LONG).show());
         findViewById(R.id.floating_copyTextField).setOnClickListener(v -> Toast.makeText(this, R.string.floating_copy_text_coming, Toast.LENGTH_LONG).show());
         findViewById(R.id.floating_browser).setOnClickListener(v -> Toast.makeText(this, R.string.floating_browser_coming, Toast.LENGTH_LONG).show());

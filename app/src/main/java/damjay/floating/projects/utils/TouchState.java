@@ -61,5 +61,12 @@ public class TouchState {
     public boolean hasMoved() {
         return Math.abs(getMoveX()) > moveTolerance || Math.abs(getMoveY()) > moveTolerance;
     }
-    
+
+    public void updateInitialTouch(float x, float y) {
+        setInitialPosition(x, y);
+    }
+
+    public void updateViewPosition(int x, int y) {
+        setOriginalPosition(x, y);
+    }
 }

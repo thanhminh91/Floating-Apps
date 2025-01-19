@@ -102,4 +102,7 @@
     <string name="floating_web_browser">Floating Web Browser</string>
     <string name="floating_copy_text_coming">Input text into a floating text field and copy to clipboard is coming soon.</string>
     <string name="floating_browser_coming">Floating Browser is coming soon.</string>
+    <string name="min_number_hint">Enter minimum number</string>
+    <string name="max_number_hint">Enter maximum number</string>
+    <string name="generate">Generate Random Number</string>
 </resources>
