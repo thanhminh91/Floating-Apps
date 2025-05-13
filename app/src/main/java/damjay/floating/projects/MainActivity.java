@@ -27,7 +27,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        findViewById(R.id.floating_pdf).setOnClickListener(Build.VERSION.SDK_INT < 21 ? v -> Toast.makeText(this, R.string.pdf_not_supported, Toast.LENGTH_LONG).show() : getActivityClickListener(FloatingPDFActivity.class));
         findViewById(R.id.floating_calculator).setOnClickListener(getServiceClickListener(CalculatorService.class));
         findViewById(R.id.floating_bible).setOnClickListener(getServiceClickListener(BibleService.class));
         findViewById(R.id.floating_timer).setOnClickListener(getServiceClickListener(TimerService.class));
@@ -41,6 +40,13 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.floating_music).setOnClickListener(v -> Toast.makeText(this, R.string.floating_music_coming, Toast.LENGTH_LONG).show());
         findViewById(R.id.floating_copyTextField).setOnClickListener(v -> Toast.makeText(this, R.string.floating_copy_text_coming, Toast.LENGTH_LONG).show());
         findViewById(R.id.floating_browser).setOnClickListener(v -> Toast.makeText(this, R.string.floating_browser_coming, Toast.LENGTH_LONG).show());
+        findViewById(R.id.floating_network).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, NetworkMonitorActivity.class);
+                startService(intent);
+            }
+        });
 
         // Request for optional optimization
         checkBatteryOptimization();

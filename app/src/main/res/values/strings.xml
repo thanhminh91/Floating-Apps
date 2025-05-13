@@ -105,4 +105,5 @@
     <string name="min_number_hint">Enter minimum number</string>
     <string name="max_number_hint">Enter maximum number</string>
     <string name="generate">Generate Random Number</string>
+    <string name="floating_network_monitor">Network Monitor</string>
 </resources>

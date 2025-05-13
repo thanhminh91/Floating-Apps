@@ -8,15 +8,17 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:layout_centerHorizontal="true"
-        android:baselineAligned="false"
-		android:id="@+id/firstLine"
+		android:baselineAligned="false"
 		android:orientation="horizontal"
+		android:weightSum="2"
+		android:id="@+id/fifthLine"
+		android:layout_below="@+id/fourthLine"
 		android:padding="10dp">
 
 		<RelativeLayout
 			android:layout_width="0dp"
 			android:layout_height="match_parent"
-			android:id="@+id/floating_pdf"
+			android:id="@+id/floating_network"
 			android:background="@color/buttonColor"
 			android:layout_margin="10dp"
 			android:layout_weight="1"
@@ -25,22 +27,22 @@
 			<ImageView
 				android:layout_width="45dp"
 				android:layout_height="45dp"
-				android:src="@drawable/pdf_logo"
-				android:id="@+id/floatingLogo"
+				android:src="@drawable/network_monitor_logo"
+				android:id="@+id/networkLogo"
 				android:layout_centerHorizontal="true"/>
 
 			<TextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_below="@+id/floatingLogo"
-				android:text="@string/floating_pdf"
+				android:layout_below="@+id/networkLogo"
+				android:text="@string/floating_network_monitor"
 				android:layout_centerHorizontal="true"
 				android:paddingTop="5dp"
 				android:textColor="#FFFFFF"
 				android:gravity="center"/>
 
 		</RelativeLayout>
-
+		
 		<RelativeLayout
 			android:layout_width="0dp"
 			android:layout_height="match_parent"
@@ -273,7 +275,6 @@
 				android:gravity="center"/>
 
 		</RelativeLayout>
-
 
 	</LinearLayout>
 
