@@ -36,6 +36,10 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            
+            <meta-data
+                android:name="android.app.shortcuts"
+                android:resource="@xml/shortcuts" />
         </activity>
 
         <activity android:name=".files.FileBrowserActivity" android:exported="true"/>
@@ -51,6 +55,17 @@
         <activity android:name=".autoclicker.activity.ClickerActivity" android:exported="true"/>
         
         <activity android:name=".NumberRangeActivity" />
+        
+        <activity 
+            android:name=".ShortcutHandlerActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:exported="true"
+            android:excludeFromRecents="true">
+            <intent-filter>
+                <action android:name="OPEN_RANDOM_NUMBER" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
         
         <activity
             android:name=".NetworkMonitorActivity"
@@ -81,6 +96,23 @@
             <meta-data android:name="android.accessibilityservice" android:resource="@xml/clicker_service"/>
         </service>
         <service android:name=".NumberRangeService" />
+        
+        <service
+            android:name=".RandomNumberTileService"
+            android:icon="@drawable/clicker_logo"
+            android:label="@string/random_number_tile_label"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.quicksettings.ACTIVE_TILE"
+                android:value="false" />
+            <meta-data
+                android:name="android.service.quicksettings.TOGGLEABLE_TILE"
+                android:value="false" />
+        </service>
         <service
             android:name=".NetworkMonitorVPNService"
             android:exported="false"

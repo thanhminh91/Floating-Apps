@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="random_number_generator"
+        android:enabled="true"
+        android:icon="@drawable/clicker_logo"
+        android:shortcutShortLabel="@string/random_number_shortcut_short_label"
+        android:shortcutLongLabel="@string/random_number_shortcut_long_label">
+        <intent
+            android:action="OPEN_RANDOM_NUMBER"
+            android:targetPackage="damjay.floating.projects"
+            android:targetClass="damjay.floating.projects.ShortcutHandlerActivity" />
+    </shortcut>
+</shortcuts>

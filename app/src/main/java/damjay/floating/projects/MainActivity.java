@@ -30,11 +30,22 @@ public class MainActivity extends AppCompatActivity {
         findViewById(R.id.floating_calculator).setOnClickListener(getServiceClickListener(CalculatorService.class));
         findViewById(R.id.floating_bible).setOnClickListener(getServiceClickListener(BibleService.class));
         findViewById(R.id.floating_timer).setOnClickListener(getServiceClickListener(TimerService.class));
-        findViewById(R.id.floating_clicker).setOnClickListener(new View.OnClickListener() {
+        View floatingClicker = findViewById(R.id.floating_clicker);
+        floatingClicker.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(MainActivity.this, NumberRangeActivity.class);
-                startActivity(intent);
+                Intent intent = new Intent(MainActivity.this, NumberRangeService.class);
+                startService(intent);
+            }
+        });
+        
+        // Add long press listener for quick access to random number generator
+        floatingClicker.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Intent intent = new Intent(MainActivity.this, NumberRangeService.class);
+                startService(intent);
+                return true;
             }
         });
         findViewById(R.id.floating_music).setOnClickListener(v -> Toast.makeText(this, R.string.floating_music_coming, Toast.LENGTH_LONG).show());
@@ -44,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(MainActivity.this, NetworkMonitorActivity.class);
-                startService(intent);
+                startActivity(intent);
             }
         });
 

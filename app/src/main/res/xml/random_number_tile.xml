@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tile-service
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:icon="@drawable/clicker_logo"
+    android:label="@string/random_number_tile_label"
+    android:description="@string/random_number_tile_description"
+    android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+</tile-service>

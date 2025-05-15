@@ -119,7 +119,10 @@
 			android:background="@color/buttonColor"
 			android:layout_margin="10dp"
 			android:layout_weight="1"
-			android:padding="10dp">
+			android:padding="10dp"
+			android:clickable="true"
+			android:focusable="true"
+			android:foreground="?android:attr/selectableItemBackground">
 
 			<ImageView
 				android:layout_width="45dp"

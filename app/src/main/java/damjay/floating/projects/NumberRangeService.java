@@ -41,7 +41,7 @@ public class NumberRangeService extends Service {
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
         floatingView = LayoutInflater.from(this).inflate(R.layout.service_number_range, null);
 
-        WindowManager.LayoutParams params = new WindowManager.LayoutParams(
+        final WindowManager.LayoutParams params = new WindowManager.LayoutParams(
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
@@ -58,26 +58,78 @@ public class NumberRangeService extends Service {
         maxNumber = floatingView.findViewById(R.id.max_number);
         Button generateButton = floatingView.findViewById(R.id.generate_button);
         resultDisplay = floatingView.findViewById(R.id.result_display);
+        
+        // Set up focus listeners for EditText fields
+        minNumber.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                // Remove FLAG_NOT_FOCUSABLE to allow keyboard to show
+                params.flags &= ~WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+                windowManager.updateViewLayout(floatingView, params);
+            }
+        });
+        
+        maxNumber.setOnFocusChangeListener((v, hasFocus) -> {
+            if (hasFocus) {
+                // Remove FLAG_NOT_FOCUSABLE to allow keyboard to show
+                params.flags &= ~WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+                windowManager.updateViewLayout(floatingView, params);
+            }
+        });
+        
+        // Set up click listeners for EditText fields
+        minNumber.setOnClickListener(v -> {
+            // Remove FLAG_NOT_FOCUSABLE to allow keyboard to show
+            params.flags &= ~WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+            windowManager.updateViewLayout(floatingView, params);
+            minNumber.requestFocus();
+        });
+        
+        maxNumber.setOnClickListener(v -> {
+            // Remove FLAG_NOT_FOCUSABLE to allow keyboard to show
+            params.flags &= ~WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+            windowManager.updateViewLayout(floatingView, params);
+            maxNumber.requestFocus();
+        });
 
-        // Set up touch listener for moving the window
+        // Set up touch listener for moving the window and handling focus
         expandedView.setOnTouchListener((v, event) -> {
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    touchState.setInitialPosition(event.getRawX(), event.getRawY());
-                    touchState.setOriginalPosition(params.x, params.y);
-                    return true;
-                case MotionEvent.ACTION_MOVE:
-                    touchState.setFinalPosition(event.getRawX(), event.getRawY());
-                    params.x = touchState.updatedPositionX();
-                    params.y = touchState.updatedPositionY();
+            // Check if we're touching the EditText fields
+            if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                // Get touch coordinates relative to the view
+                float x = event.getX();
+                float y = event.getY();
+                
+                // Check if touch is outside EditText fields
+                if (!isTouchOnView(minNumber, x, y, expandedView) && 
+                    !isTouchOnView(maxNumber, x, y, expandedView)) {
+                    // Clear focus from EditText fields
+                    minNumber.clearFocus();
+                    maxNumber.clearFocus();
+                    
+                    // Restore FLAG_NOT_FOCUSABLE
+                    params.flags |= WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
                     windowManager.updateViewLayout(floatingView, params);
-                    return true;
+                }
+                
+                touchState.setInitialPosition(event.getRawX(), event.getRawY());
+                touchState.setOriginalPosition(params.x, params.y);
+                return true;
+            } else if (event.getAction() == MotionEvent.ACTION_MOVE) {
+                touchState.setFinalPosition(event.getRawX(), event.getRawY());
+                params.x = touchState.updatedPositionX();
+                params.y = touchState.updatedPositionY();
+                windowManager.updateViewLayout(floatingView, params);
+                return true;
             }
             return false;
         });
 
         generateButton.setOnClickListener(v -> {
             try {
+                // Restore FLAG_NOT_FOCUSABLE
+                params.flags |= WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+                windowManager.updateViewLayout(floatingView, params);
+                
                 int min = Integer.parseInt(minNumber.getText().toString());
                 int max = Integer.parseInt(maxNumber.getText().toString());
                 if (min <= max) {
@@ -92,14 +144,25 @@ public class NumberRangeService extends Service {
             }
         });
 
-        floatingView.findViewById(R.id.close_button).setOnClickListener(v -> stopSelf());
+        floatingView.findViewById(R.id.close_button).setOnClickListener(v -> {
+            // Restore FLAG_NOT_FOCUSABLE before closing
+            params.flags |= WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+            windowManager.updateViewLayout(floatingView, params);
+            stopSelf();
+        });
 
         collapsedView.setOnClickListener(v -> {
+            // Restore FLAG_NOT_FOCUSABLE when expanding
+            params.flags |= WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+            windowManager.updateViewLayout(floatingView, params);
             collapsedView.setVisibility(View.GONE);
             expandedView.setVisibility(View.VISIBLE);
         });
 
         floatingView.findViewById(R.id.minimize_button).setOnClickListener(v -> {
+            // Restore FLAG_NOT_FOCUSABLE when minimizing
+            params.flags |= WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+            windowManager.updateViewLayout(floatingView, params);
             expandedView.setVisibility(View.GONE);
             collapsedView.setVisibility(View.VISIBLE);
         });
@@ -113,5 +176,22 @@ public class NumberRangeService extends Service {
         if (floatingView != null) {
             windowManager.removeView(floatingView);
         }
+    }
+    
+    // Helper method to check if touch is on a specific view
+    private boolean isTouchOnView(View view, float x, float y, View parent) {
+        int[] parentLocation = new int[2];
+        int[] viewLocation = new int[2];
+        
+        parent.getLocationOnScreen(parentLocation);
+        view.getLocationOnScreen(viewLocation);
+        
+        // Adjust coordinates to be relative to parent
+        int viewX = viewLocation[0] - parentLocation[0];
+        int viewY = viewLocation[1] - parentLocation[1];
+        
+        // Check if touch is within view bounds
+        return (x >= viewX && x <= viewX + view.getWidth() &&
+                y >= viewY && y <= viewY + view.getHeight());
     }
 } 

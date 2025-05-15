@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "damjay.floating.projects"
-    compileSdk = 33
+    compileSdk = 35
     
     defaultConfig {
         applicationId = "damjay.floating.projects"
         minSdk = 19
-        targetSdk = 33
+        targetSdk = 35
         versionCode = 1
         versionName = "1.0"
         
@@ -34,12 +34,11 @@ android {
 }
 
 dependencies {
-
-
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("com.google.android.material:material:1.9.0")
+    implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    implementation("androidx.core:core:1.12.0")
     
-    testImplementation("junit:junit:4.12")
-    testImplementation("org.mockito:mockito-core:1.10.19")
+    testImplementation("junit:junit:4.13.2")
+    testImplementation("org.mockito:mockito-core:5.7.0")
 }

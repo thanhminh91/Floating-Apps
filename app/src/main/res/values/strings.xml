@@ -106,4 +106,8 @@
     <string name="max_number_hint">Enter maximum number</string>
     <string name="generate">Generate Random Number</string>
     <string name="floating_network_monitor">Network Monitor</string>
+    <string name="random_number_shortcut_short_label">Random Number</string>
+    <string name="random_number_shortcut_long_label">Generate Random Number</string>
+    <string name="random_number_tile_label">Random Number</string>
+    <string name="random_number_tile_description">Open floating random number generator</string>
 </resources>
