@@ -22,7 +22,10 @@ import android.view.WindowManager.LayoutParams;
 import androidx.annotation.NonNull;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Locale;
+import java.util.UUID;
 
 public class ViewsUtils {
     public static Context mainContext;
@@ -221,6 +224,45 @@ public class ViewsUtils {
     public static File getDownloadsFile() {
         return Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
     }
-
+    
+    /**
+     * Gets the appropriate window type based on Android version
+     * @return The window type to use for overlay windows
+     */
+    public static int getWindowType() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O 
+                ? WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY 
+                : WindowManager.LayoutParams.TYPE_PHONE;
+    }
+    
+    /**
+     * Converts a bitmap to a URI that can be used with the clipboard
+     * 
+     * @param context The context
+     * @param bitmap The bitmap to convert
+     * @return The URI for the bitmap
+     */
+    public static Uri getUriFromBitmap(Context context, Bitmap bitmap) {
+        try {
+            // Create a file in the app's cache directory
+            File cachePath = new File(context.getCacheDir(), "images");
+            cachePath.mkdirs();
+            
+            // Create a unique filename
+            String fileName = "shared_image_" + UUID.randomUUID().toString() + ".png";
+            File file = new File(cachePath, fileName);
+            
+            // Write the bitmap to the file
+            FileOutputStream stream = new FileOutputStream(file);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            stream.close();
+            
+            // Get a URI for the file
+            return Uri.parse(file.getAbsolutePath());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 }

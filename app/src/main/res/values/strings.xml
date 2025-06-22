@@ -100,7 +100,7 @@
     <string name="floating_music_coming">Floating Music is coming soon.</string>
     <string name="floating_copy_text_field">Clipboard Copy</string>
     <string name="floating_web_browser">Floating Web Browser</string>
-    <string name="floating_copy_text_coming">Input text into a floating text field and copy to clipboard is coming soon.</string>
+    <string name="floating_copy_text_coming">Share clipboard content between your devices on the same network.</string>
     <string name="floating_browser_coming">Floating Browser is coming soon.</string>
     <string name="min_number_hint">Enter minimum number</string>
     <string name="max_number_hint">Enter maximum number</string>
@@ -110,4 +110,9 @@
     <string name="random_number_shortcut_long_label">Generate Random Number</string>
     <string name="random_number_tile_label">Random Number</string>
     <string name="random_number_tile_description">Open floating random number generator</string>
+    <string name="share">Share</string>
+    <string name="scan">Scan</string>
+    <string name="ready">Ready to share clipboard</string>
+    <string name="clipboard_image_preview">Image Preview</string>
+    <string name="close">Close</string>
 </resources>

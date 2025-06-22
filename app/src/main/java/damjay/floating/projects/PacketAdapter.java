@@ -42,9 +42,15 @@ public class PacketAdapter extends RecyclerView.Adapter<PacketAdapter.PacketView
     }
 
     private String convertToCurl(String packetData) {
-        // Implement logic to convert packet data to CURL command
-        // This is a placeholder, you need to parse the packet and generate CURL command
-        return "curl -X GET 'http://example.com'"; // Example CURL command
+        // The packet data already contains the curl command in the last line
+        // Format is: METHOD URL\ncurl command
+        String[] parts = packetData.split("\\n", 2);
+        if (parts.length > 1) {
+            return parts[1]; // Return the curl part
+        }
+        
+        // Fallback if format is unexpected
+        return packetData;
     }
 
     private void copyToClipboard(String text) {

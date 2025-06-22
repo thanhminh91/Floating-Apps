@@ -18,12 +18,25 @@
             android:textSize="20sp"
             android:textStyle="bold"/>
 
-        <Switch
-            android:id="@+id/networkSwitch"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Enable Monitoring"/>
+            android:orientation="horizontal">
+            
+            <Switch
+                android:id="@+id/networkSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Enable Monitoring"/>
+                
+            <Button
+                android:id="@+id/testButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="Test Connection"/>
+        </LinearLayout>
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView

@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import damjay.floating.projects.autoclicker.activity.ModeSelectorActivity;
 import damjay.floating.projects.bible.BibleService;
 import damjay.floating.projects.calculate.CalculatorService;
+import damjay.floating.projects.clipboard.ClipboardService;
 import damjay.floating.projects.timer.TimerService;
 
 public class MainActivity extends AppCompatActivity {
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         findViewById(R.id.floating_music).setOnClickListener(v -> Toast.makeText(this, R.string.floating_music_coming, Toast.LENGTH_LONG).show());
-        findViewById(R.id.floating_copyTextField).setOnClickListener(v -> Toast.makeText(this, R.string.floating_copy_text_coming, Toast.LENGTH_LONG).show());
+        findViewById(R.id.floating_copyTextField).setOnClickListener(getServiceClickListener(ClipboardService.class));
         findViewById(R.id.floating_browser).setOnClickListener(v -> Toast.makeText(this, R.string.floating_browser_coming, Toast.LENGTH_LONG).show());
         findViewById(R.id.floating_network).setOnClickListener(new View.OnClickListener() {
             @Override
