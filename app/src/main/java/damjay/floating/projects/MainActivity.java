@@ -1,7 +1,9 @@
 package damjay.floating.projects;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,14 +13,17 @@ import android.view.View;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import damjay.floating.projects.autoclicker.activity.ModeSelectorActivity;
-import damjay.floating.projects.bible.BibleService;
+import damjay.floating.projects.voicetranslator.VoiceTranslatorService;
 import damjay.floating.projects.calculate.CalculatorService;
 import damjay.floating.projects.clipboard.ClipboardService;
 import damjay.floating.projects.timer.TimerService;
 
 public class MainActivity extends AppCompatActivity {
     public static final int FLOAT_PERMISSION_REQUEST = 100;
+    public static final int AUDIO_PERMISSION_REQUEST = 101;
 
     private AlertDialog alertDialog;
 
@@ -29,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         findViewById(R.id.floating_calculator).setOnClickListener(getServiceClickListener(CalculatorService.class));
-        findViewById(R.id.floating_bible).setOnClickListener(getServiceClickListener(BibleService.class));
+        findViewById(R.id.floating_voice_translator).setOnClickListener(getVoiceTranslatorClickListener());
         findViewById(R.id.floating_timer).setOnClickListener(getServiceClickListener(TimerService.class));
         View floatingClicker = findViewById(R.id.floating_clicker);
         floatingClicker.setOnClickListener(new View.OnClickListener() {
@@ -128,6 +133,57 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, clazz);
             startService(intent);
         };
+    }
+    
+    private View.OnClickListener getVoiceTranslatorClickListener() {
+        return view -> {
+            // Check audio permission before starting voice translator service
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) 
+                != PackageManager.PERMISSION_GRANTED) {
+                requestAudioPermission();
+            } else {
+                Intent intent = new Intent(MainActivity.this, VoiceTranslatorService.class);
+                startService(intent);
+            }
+        };
+    }
+    
+    private void requestAudioPermission() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.RECORD_AUDIO)) {
+            // Show explanation dialog
+            new AlertDialog.Builder(this)
+                .setTitle("Cần quyền ghi âm")
+                .setMessage("Ứng dụng cần quyền ghi âm để sử dụng tính năng dịch giọng nói. Vui lòng cấp quyền để tiếp tục.")
+                .setPositiveButton("Cấp quyền", (dialog, which) -> {
+                    ActivityCompat.requestPermissions(this, 
+                        new String[]{Manifest.permission.RECORD_AUDIO}, 
+                        AUDIO_PERMISSION_REQUEST);
+                })
+                .setNegativeButton("Hủy", null)
+                .show();
+        } else {
+            // Request permission directly
+            ActivityCompat.requestPermissions(this, 
+                new String[]{Manifest.permission.RECORD_AUDIO}, 
+                AUDIO_PERMISSION_REQUEST);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        
+        if (requestCode == AUDIO_PERMISSION_REQUEST) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, start voice translator service
+                Intent intent = new Intent(MainActivity.this, VoiceTranslatorService.class);
+                startService(intent);
+                Toast.makeText(this, "Quyền ghi âm đã được cấp", Toast.LENGTH_SHORT).show();
+            } else {
+                // Permission denied
+                Toast.makeText(this, "Cần quyền ghi âm để sử dụng tính năng dịch giọng nói", Toast.LENGTH_LONG).show();
+            }
+        }
     }
 
     @Override

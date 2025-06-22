@@ -87,7 +87,7 @@
 		<RelativeLayout
 			android:layout_width="0dp"
 			android:layout_height="match_parent"
-			android:id="@+id/floating_bible"
+			android:id="@+id/floating_voice_translator"
 			android:background="@color/buttonColor"
 			android:layout_margin="10dp"
 			android:layout_weight="1"
@@ -96,15 +96,15 @@
 			<ImageView
 				android:layout_width="45dp"
 				android:layout_height="45dp"
-				android:src="@drawable/bible_logo"
-				android:id="@+id/bibleLogo"
+				android:src="@drawable/voice_translator_logo"
+				android:id="@+id/voiceTranslatorLogo"
 				android:layout_centerHorizontal="true"/>
 
 			<TextView
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
-				android:layout_below="@+id/bibleLogo"
-				android:text="@string/floating_bible"
+				android:layout_below="@+id/voiceTranslatorLogo"
+				android:text="@string/floating_voice_translator"
 				android:layout_centerHorizontal="true"
 				android:paddingTop="5dp"
 				android:textColor="#FFFFFF"

@@ -69,4 +69,29 @@ public class TouchState {
     public void updateViewPosition(int x, int y) {
         setOriginalPosition(x, y);
     }
+
+    // Methods for ClipboardService compatibility
+    public void savePosition(float x, float y) {
+        setInitialPosition(x, y);
+    }
+
+    public void saveCoordinates(int x, int y) {
+        setOriginalPosition(x, y);
+    }
+
+    public float getStartRawX() {
+        return initialX;
+    }
+
+    public float getStartRawY() {
+        return initialY;
+    }
+
+    public int getCoordinateX() {
+        return originalX;
+    }
+
+    public int getCoordinateY() {
+        return originalY;
+    }
 }

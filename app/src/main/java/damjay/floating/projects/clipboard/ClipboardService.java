@@ -114,7 +114,7 @@ public class ClipboardService extends Service {
         floatingView = inflater.inflate(R.layout.clipboard_floating_layout, null);
         
         // Set up the touch state for dragging
-        touchState = new TouchState();
+        touchState = TouchState.newInstance();
         
         // Find views
         statusTextView = floatingView.findViewById(R.id.status_text);

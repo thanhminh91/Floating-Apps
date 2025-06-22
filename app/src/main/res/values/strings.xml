@@ -3,6 +3,7 @@
     <string name="floating_pdf">Floating PDF</string>
     <string name="floating_calc">Floating Calculator</string>
     <string name="floating_bible">Floating Bible</string>
+    <string name="floating_voice_translator">Video Voice Translator</string>
     <string name="floating_clicker">Floating Clicker</string>
     
     <string name="path_hint">Path to PDF File</string>
@@ -115,4 +116,37 @@
     <string name="ready">Ready to share clipboard</string>
     <string name="clipboard_image_preview">Image Preview</string>
     <string name="close">Close</string>
+    
+    <!-- Voice Translator Strings -->
+    <string name="voice_translator_logo">Voice Translator Logo</string>
+    <string name="minimize_voice_translator">Minimize Voice Translator</string>
+    <string name="close_voice_translator">Close Voice Translator</string>
+    <string name="start_recording">Start Recording</string>
+    <string name="stop_recording">Stop Recording</string>
+    <string name="recording">Recording...</string>
+    <string name="processing">Processing...</string>
+    <string name="source_language">Source Language</string>
+    <string name="target_language">Target Language</string>
+    <string name="translation_history">Translation History</string>
+    <string name="clear_history">Clear History</string>
+    <string name="original_text">Original Text</string>
+    <string name="translated_text">Translated Text</string>
+    <string name="copy_text">Copy Text</string>
+    <string name="share_text">Share Text</string>
+    <string name="no_translation_history">No translation history</string>
+    <string name="recording_permission_required">Recording permission is required for this feature</string>
+    <string name="internet_permission_required">Internet permission is required for translation</string>
+    <string name="translation_error">Translation error occurred</string>
+    <string name="recording_error">Recording error occurred</string>
+    <string name="auto_detect">Auto Detect</string>
+    <string name="vietnamese">Vietnamese</string>
+    <string name="english">English</string>
+    <string name="chinese">Chinese</string>
+    <string name="japanese">Japanese</string>
+    <string name="korean">Korean</string>
+    <string name="spanish">Spanish</string>
+    <string name="french">French</string>
+    <string name="german">German</string>
+    <string name="russian">Russian</string>
+    <string name="arabic">Arabic</string>
 </resources>
