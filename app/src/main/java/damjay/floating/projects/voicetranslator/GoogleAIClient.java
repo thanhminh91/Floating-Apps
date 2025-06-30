@@ -20,7 +20,7 @@ import okhttp3.Response;
 
 public class GoogleAIClient {
     private static final String TAG = "GoogleAIClient";
-    private static final String API_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
+    private static final String API_BASE_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
     
     private OkHttpClient client;
     private Gson gson;
@@ -189,15 +189,34 @@ public class GoogleAIClient {
 
     private String buildTranslationPrompt(String text, String sourceLanguage, String targetLanguage) {
         StringBuilder prompt = new StringBuilder();
-        prompt.append("Translate the following text ");
         
-        if (!sourceLanguage.equals("auto")) {
-            prompt.append("from ").append(getLanguageName(sourceLanguage)).append(" ");
+        // Enhanced prompt for better translation quality, especially for Vietnamese
+        if (targetLanguage.equals("vi")) {
+            prompt.append("Bạn là một chuyên gia dịch thuật chuyên nghiệp. Hãy dịch đoạn text sau ");
+            if (!sourceLanguage.equals("auto")) {
+                prompt.append("từ ").append(getLanguageNameVietnamese(sourceLanguage)).append(" ");
+            }
+            prompt.append("sang tiếng Việt một cách tự nhiên, chính xác và phù hợp với ngữ cảnh:\n\n");
+            prompt.append("\"").append(text).append("\"\n\n");
+            prompt.append("Yêu cầu:\n");
+            prompt.append("- Dịch sát nghĩa, tự nhiên như người Việt nói\n");
+            prompt.append("- Giữ nguyên tone và ý nghĩa của câu gốc\n");
+            prompt.append("- Sử dụng từ ngữ phù hợp với ngữ cảnh\n");
+            prompt.append("- Chỉ trả về bản dịch, không giải thích thêm\n");
+        } else {
+            prompt.append("You are a professional translator. Translate the following text ");
+            
+            if (!sourceLanguage.equals("auto")) {
+                prompt.append("from ").append(getLanguageName(sourceLanguage)).append(" ");
+            }
+            
+            prompt.append("to ").append(getLanguageName(targetLanguage)).append(" accurately and naturally:\n\n");
+            prompt.append("\"").append(text).append("\"\n\n");
+            prompt.append("Requirements:\n");
+            prompt.append("- Maintain the original meaning and tone\n");
+            prompt.append("- Use natural, contextually appropriate language\n");
+            prompt.append("- Provide only the translation without explanations\n");
         }
-        
-        prompt.append("to ").append(getLanguageName(targetLanguage)).append(":\n\n");
-        prompt.append(text);
-        prompt.append("\n\nProvide only the translation without any additional text or explanation.");
         
         return prompt.toString();
     }
@@ -217,18 +236,48 @@ public class GoogleAIClient {
             default: return "English";
         }
     }
+    
+    private String getLanguageNameVietnamese(String code) {
+        switch (code) {
+            case "vi": return "tiếng Việt";
+            case "en": return "tiếng Anh";
+            case "zh": return "tiếng Trung";
+            case "ja": return "tiếng Nhật";
+            case "ko": return "tiếng Hàn";
+            case "es": return "tiếng Tây Ban Nha";
+            case "fr": return "tiếng Pháp";
+            case "de": return "tiếng Đức";
+            case "ru": return "tiếng Nga";
+            case "ar": return "tiếng Ả Rập";
+            default: return "tiếng Anh";
+        }
+    }
 
     private String buildTranscriptionPrompt(String languageCode) {
         StringBuilder prompt = new StringBuilder();
-        prompt.append("Please transcribe the audio content to text");
         
-        if (!languageCode.equals("auto")) {
-            prompt.append(" in ").append(getLanguageName(languageCode));
+        if (languageCode.equals("vi")) {
+            prompt.append("Bạn là chuyên gia phiên âm âm thanh. Hãy chuyển đổi nội dung âm thanh thành văn bản tiếng Việt chính xác:\n\n");
+            prompt.append("Yêu cầu:\n");
+            prompt.append("- Phiên âm chính xác từng từ, câu\n");
+            prompt.append("- Sử dụng dấu câu phù hợp\n");
+            prompt.append("- Viết hoa đúng ngữ pháp tiếng Việt\n");
+            prompt.append("- Chỉ trả về văn bản đã phiên âm, không giải thích\n");
+            prompt.append("- Nếu âm thanh không rõ, hãy cố gắng phiên âm những gì nghe được");
+        } else {
+            prompt.append("You are an expert audio transcriber. Please transcribe the audio content to text");
+            
+            if (!languageCode.equals("auto")) {
+                prompt.append(" in ").append(getLanguageName(languageCode));
+            }
+            
+            prompt.append(":\n\n");
+            prompt.append("Requirements:\n");
+            prompt.append("- Transcribe accurately word by word\n");
+            prompt.append("- Use proper punctuation and capitalization\n");
+            prompt.append("- Provide only the transcribed text without explanations\n");
+            prompt.append("- If audio is unclear, transcribe what you can hear clearly");
         }
-        
-        prompt.append(". Provide only the transcribed text without any additional explanation or formatting. ");
-        prompt.append("If the audio contains speech, transcribe it accurately. ");
-        prompt.append("If the audio quality is poor or unclear, do your best to transcribe what you can hear.");
         
         return prompt.toString();
     }

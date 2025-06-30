@@ -180,7 +180,7 @@
                         android:id="@+id/systemAudioButton"
                         android:layout_width="120dp"
                         android:layout_height="50dp"
-                        android:text="Capture Video Audio"
+                        android:text="Record Video Audio"
                         android:textColor="#FFFFFF"
                         android:background="@drawable/round_button"
                         android:textSize="10sp"/>
@@ -188,7 +188,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="TikTok/Douyin"
+                        android:text="Any Video App"
                         android:textColor="#FFFFFF"
                         android:textSize="12sp"
                         android:layout_marginStart="10dp"/>

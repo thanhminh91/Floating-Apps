@@ -32,6 +32,8 @@
     
     <!-- Permissions for system audio capture -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PROJECTION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <uses-permission android:name="android.permission.CAPTURE_VIDEO_OUTPUT" />
     
     <!-- Permissions for file logging -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -70,12 +72,31 @@
                 android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
         </activity>
+        
+        <!-- Video Voice Translator Launcher -->
+        <activity
+            android:name=".VoiceTranslatorLauncherActivity"
+            android:exported="true"
+            android:label="🎤 Video Voice Translator"
+            android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
         <activity android:name=".files.FileBrowserActivity" android:exported="true"/>
         
         <activity android:name=".autoclicker.activity.ModeSelectorActivity" android:exported="true"/>
         
         <activity android:name=".autoclicker.activity.ActionSelectorActivity" android:exported="true"/>
+        
+        <!-- Log Viewer Activity -->
+        <activity 
+            android:name=".LogViewerActivity" 
+            android:exported="false"
+            android:label="Debug Logs"
+            android:theme="@style/AppTheme" />
         
         <activity android:name=".autoclicker.activity.GuestActivity" android:exported="true" android:noHistory="true"/>
         
@@ -110,7 +131,7 @@
             android:name=".voicetranslator.VoiceTranslatorService"
             android:enabled="true"
             android:exported="true"
-            android:foregroundServiceType="mediaProjection"/>
+            android:foregroundServiceType="microphone|mediaProjection"/>
             
         <activity 
             android:name=".voicetranslator.MediaProjectionActivity"
@@ -162,6 +183,24 @@
                 android:name="android.service.quicksettings.TOGGLEABLE_TILE"
                 android:value="false" />
         </service>
+        
+        <!-- Voice Translator Quick Settings Tile -->
+        <service
+            android:name=".VoiceTranslatorTileService"
+            android:icon="@drawable/voice_translator_logo"
+            android:label="Video Voice Translator"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.quicksettings.ACTIVE_TILE"
+                android:value="false" />
+            <meta-data
+                android:name="android.service.quicksettings.TOGGLEABLE_TILE"
+                android:value="false" />
+        </service>
         <!-- ClipboardService for LAN clipboard sharing -->
         <service
             android:name=".clipboard.ClipboardService"
@@ -179,6 +218,19 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths" />
         </provider>
+        
+        <!-- Voice Translator Widget -->
+        <receiver 
+            android:name=".widget.VoiceTranslatorWidget"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data 
+                android:name="android.appwidget.provider"
+                android:resource="@xml/voice_translator_widget_info" />
+        </receiver>
+        
 	</application>
 
 </manifest>

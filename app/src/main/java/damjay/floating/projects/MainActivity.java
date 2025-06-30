@@ -24,8 +24,16 @@ import damjay.floating.projects.timer.TimerService;
 public class MainActivity extends AppCompatActivity {
     public static final int FLOAT_PERMISSION_REQUEST = 100;
     public static final int AUDIO_PERMISSION_REQUEST = 101;
+    public static final int ALL_PERMISSIONS_REQUEST = 102;
 
     private AlertDialog alertDialog;
+    
+    // All required permissions
+    private final String[] REQUIRED_PERMISSIONS = {
+        Manifest.permission.RECORD_AUDIO,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.READ_EXTERNAL_STORAGE
+    };
 
     // TODO: Don't make granting Display over other apps permission too strict
     @Override
@@ -64,6 +72,12 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        // Set up app header long press menu for quick actions
+        setupAppHeaderMenu();
+
+        // Request all required permissions first
+        requestAllRequiredPermissions();
 
         // Request for optional optimization
         checkBatteryOptimization();
@@ -142,8 +156,13 @@ public class MainActivity extends AppCompatActivity {
                 != PackageManager.PERMISSION_GRANTED) {
                 requestAudioPermission();
             } else {
-                Intent intent = new Intent(MainActivity.this, VoiceTranslatorService.class);
-                startService(intent);
+                try {
+                    Intent intent = new Intent(MainActivity.this, VoiceTranslatorService.class);
+                    startService(intent);
+                    Toast.makeText(this, "Starting Voice Translator...", Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    Toast.makeText(this, "Error starting Voice Translator: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
             }
         };
     }
@@ -169,6 +188,43 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void requestAllRequiredPermissions() {
+        // Filter out permissions that are already granted
+        java.util.List<String> missingPermissions = new java.util.ArrayList<>();
+        
+        for (String permission : REQUIRED_PERMISSIONS) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+                    // Skip storage permissions on Android 11+ where they're handled differently
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && 
+                        (permission.equals(Manifest.permission.WRITE_EXTERNAL_STORAGE) || 
+                         permission.equals(Manifest.permission.READ_EXTERNAL_STORAGE))) {
+                        continue;
+                    }
+                    missingPermissions.add(permission);
+                }
+            }
+        }
+        
+        if (!missingPermissions.isEmpty()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Required Permissions");
+            builder.setMessage("This app needs the following permissions to work properly:\n\n" +
+                "• Microphone - for voice recording\n" +
+                "• Storage - for saving logs\n" +
+                "• Foreground Service - for background operation\n\n" +
+                "Please grant all permissions to continue.");
+            builder.setPositiveButton("Grant Permissions", (dialog, which) -> {
+                ActivityCompat.requestPermissions(this, 
+                    missingPermissions.toArray(new String[0]), 
+                    ALL_PERMISSIONS_REQUEST);
+            });
+            builder.setNegativeButton("Skip", null);
+            builder.setCancelable(false);
+            builder.show();
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -182,6 +238,19 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 // Permission denied
                 Toast.makeText(this, "Cần quyền ghi âm để sử dụng tính năng dịch giọng nói", Toast.LENGTH_LONG).show();
+            }
+        } else if (requestCode == ALL_PERMISSIONS_REQUEST) {
+            int grantedCount = 0;
+            for (int result : grantResults) {
+                if (result == PackageManager.PERMISSION_GRANTED) {
+                    grantedCount++;
+                }
+            }
+            
+            if (grantedCount == grantResults.length) {
+                Toast.makeText(this, "All permissions granted! ✓", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "Some permissions denied. App may not work properly.", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -204,6 +273,81 @@ public class MainActivity extends AppCompatActivity {
             alertDialog.dismiss();
             alertDialog = null;
         }
+    }
+
+    private void setupAppHeaderMenu() {
+        View appHeader = findViewById(R.id.app_header);
+        if (appHeader != null) {
+            appHeader.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View v) {
+                    showQuickActionMenu();
+                    return true;
+                }
+            });
+        }
+    }
+    
+    private void showQuickActionMenu() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Quick Actions");
+        
+        String[] options = {
+            "🎯 Random Number Generator",
+            "🎤 Video Voice Translator", 
+            "🧮 Calculator",
+            "⏱️ Timer",
+            "📋 Clipboard",
+            "📊 Network Monitor",
+            "📋 Debug Logs"
+        };
+        
+        builder.setItems(options, (dialog, which) -> {
+            Intent intent;
+            switch (which) {
+                case 0: // Random Number Generator
+                    intent = new Intent(MainActivity.this, NumberRangeService.class);
+                    startService(intent);
+                    break;
+                case 1: // Video Voice Translator
+                    if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) 
+                        != PackageManager.PERMISSION_GRANTED) {
+                        requestAudioPermission();
+                    } else {
+                        try {
+                            intent = new Intent(MainActivity.this, VoiceTranslatorService.class);
+                            startService(intent);
+                            Toast.makeText(this, "Starting Voice Translator...", Toast.LENGTH_SHORT).show();
+                        } catch (Exception e) {
+                            Toast.makeText(this, "Error starting Voice Translator: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    }
+                    break;
+                case 2: // Calculator
+                    intent = new Intent(MainActivity.this, CalculatorService.class);
+                    startService(intent);
+                    break;
+                case 3: // Timer
+                    intent = new Intent(MainActivity.this, TimerService.class);
+                    startService(intent);
+                    break;
+                case 4: // Clipboard
+                    intent = new Intent(MainActivity.this, ClipboardService.class);
+                    startService(intent);
+                    break;
+                case 5: // Network Monitor
+                    intent = new Intent(MainActivity.this, NetworkMonitorActivity.class);
+                    startActivity(intent);
+                    break;
+                case 6: // Debug Logs
+                    intent = new Intent(MainActivity.this, LogViewerActivity.class);
+                    startActivity(intent);
+                    break;
+            }
+        });
+        
+        builder.setNegativeButton("Cancel", null);
+        builder.show();
     }
 
     @Override

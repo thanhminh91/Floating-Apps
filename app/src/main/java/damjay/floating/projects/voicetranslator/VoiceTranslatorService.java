@@ -91,14 +91,23 @@ public class VoiceTranslatorService extends Service implements AudioRecorder.Rec
     private List<TranslationHistory> translationHistory;
     private TranslationHistoryAdapter historyAdapter;
     
+    // New floating components
+    private FloatingRecordButton floatingRecordButton;
+    private TranslationResultPopup translationResultPopup;
+    
     // State
     private boolean isRecording = false;
     private boolean isCapturingSystemAudio = false;
     private boolean isForegroundServiceStarted = false;
+    private boolean hasMediaProjectionPermission = false;
     private Language selectedSourceLanguage;
     private Language selectedTargetLanguage;
     private MediaProjection mediaProjection;
     private String lastTranscribedText = "";
+    
+    // Static MediaProjection data to persist across service restarts
+    private static MediaProjection staticMediaProjection;
+    private static boolean staticHasPermission = false;
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -107,12 +116,19 @@ public class VoiceTranslatorService extends Service implements AudioRecorder.Rec
     
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        // Ensure we're running as foreground service for MediaProjection
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !isForegroundServiceStarted) {
+        fileLogger.d(TAG, "onStartCommand called, flags: " + flags + ", startId: " + startId);
+        
+        // Always ensure we're running as foreground service
+        if (!isForegroundServiceStarted) {
             try {
+                fileLogger.d(TAG, "Starting foreground service in onStartCommand...");
                 startForegroundService();
             } catch (Exception e) {
                 fileLogger.e(TAG, "Failed to start foreground service in onStartCommand", e);
+                showToast("Failed to start service: " + e.getMessage());
+                // If we can't start as foreground, stop the service
+                stopSelf();
+                return START_NOT_STICKY;
             }
         }
         
@@ -134,6 +150,12 @@ public class VoiceTranslatorService extends Service implements AudioRecorder.Rec
         
         if (resultCode == Activity.RESULT_OK && data != null) {
             try {
+                fileLogger.d(TAG, "Permission granted, upgrading service to MediaProjection type first...");
+                
+                // First upgrade to MediaProjection foreground service type
+                hasMediaProjectionPermission = true; // Set this first so upgrade method works
+                upgradeToMediaProjectionService();
+                
                 fileLogger.d(TAG, "Creating MediaProjection...");
                 mediaProjection = SystemAudioCapture.getMediaProjection(this, resultCode, data);
                 
@@ -141,23 +163,28 @@ public class VoiceTranslatorService extends Service implements AudioRecorder.Rec
                     fileLogger.d(TAG, "MediaProjection created successfully");
                     systemAudioCapture.setMediaProjection(mediaProjection);
                     
-                    // Now start system audio capture
-                    fileLogger.d(TAG, "Starting system audio capture with MediaProjection...");
-                    if (systemAudioCapture.startSystemAudioCapture()) {
-                        isCapturingSystemAudio = true;
-                        updateSystemAudioUI();
-                        fileLogger.d(TAG, "System audio capture started successfully after permission granted");
-                        showDebugToast("System audio capture started!");
-                    } else {
-                        fileLogger.e(TAG, "Failed to start system audio capture even after permission granted");
-                        showToast("Không thể bắt đầu capture âm thanh hệ thống");
-                    }
+                    // Store MediaProjection for future use
+                    staticMediaProjection = mediaProjection;
+                    staticHasPermission = true;
+                    
+                    // Hide main popup and show floating button
+                    mainHandler.post(() -> {
+                        fileLogger.d(TAG, "About to minimize view and show floating button");
+                        minimizeView();
+                        showFloatingRecordButton();
+                        showToast("Đã cấp quyền thành công! Mở ứng dụng video bất kỳ và nhấn nút ghi âm.");
+                        fileLogger.d(TAG, "Completed showing floating button");
+                    });
+                    
+                    fileLogger.d(TAG, "MediaProjection permission granted, showing floating record button");
                 } else {
                     fileLogger.e(TAG, "MediaProjection is null after creation");
+                    hasMediaProjectionPermission = false; // Reset on failure
                     showToast("Không thể tạo MediaProjection");
                 }
             } catch (Exception e) {
                 fileLogger.e(TAG, "Error handling MediaProjection result", e);
+                hasMediaProjectionPermission = false; // Reset on failure
                 showToast("Lỗi khi xử lý quyền capture âm thanh: " + e.getMessage());
             }
         } else {
@@ -181,9 +208,22 @@ public class VoiceTranslatorService extends Service implements AudioRecorder.Rec
         fileLogger.i(TAG, "=== VoiceTranslatorService onCreate ===");
         
         Log.d(TAG, "VoiceTranslatorService onCreate");
+        showToast("VoiceTranslatorService started!");
         
         // Start as foreground service for MediaProjection
-        startForegroundService();
+        try {
+            startForegroundService();
+            fileLogger.d(TAG, "Foreground service started successfully");
+        } catch (Exception e) {
+            fileLogger.e(TAG, "Failed to start foreground service in onCreate", e);
+            showToast("Failed to start foreground service: " + e.getMessage());
+            // If we can't start as foreground, stop the service
+            stopSelf();
+            return;
+        }
+        
+        // Restore MediaProjection if available
+        restoreMediaProjection();
         
         mainHandler = new Handler(Looper.getMainLooper());
         windowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
@@ -217,20 +257,84 @@ public class VoiceTranslatorService extends Service implements AudioRecorder.Rec
         googleAIClient = new GoogleAIClient(GOOGLE_AI_API_KEY);
         translationHistory = new ArrayList<>();
         
+        // Initialize floating components
+        floatingRecordButton = new FloatingRecordButton(this);
+        translationResultPopup = new TranslationResultPopup(this);
+        
+        // Set up floating record button listener
+        floatingRecordButton.setOnRecordClickListener(new FloatingRecordButton.OnRecordClickListener() {
+            @Override
+            public void onStartRecord() {
+                startFloatingRecording();
+            }
+
+            @Override
+            public void onStopRecord() {
+                stopFloatingRecording();
+            }
+        });
+        
         // Setup UI
-        setupView();
-        setupLanguageSpinners();
-        setupEventListeners();
+        try {
+            fileLogger.d(TAG, "Setting up UI...");
+            setupView();
+            setupLanguageSpinners();
+            setupEventListeners();
+            fileLogger.d(TAG, "UI setup completed");
+        } catch (Exception e) {
+            fileLogger.e(TAG, "Failed to setup UI", e);
+            showToast("Failed to setup UI: " + e.getMessage());
+            stopSelf();
+            return;
+        }
         
         // Add view to window
-        windowManager.addView(view, params);
-        windowManager.updateViewLayout(view, params);
-        addTouchListeners(view);
-        
-        minimizeView();
+        try {
+            fileLogger.d(TAG, "Adding view to window...");
+            windowManager.addView(view, params);
+            windowManager.updateViewLayout(view, params);
+            addTouchListeners(view);
+            
+            minimizeView();
+            fileLogger.d(TAG, "Main view added to window successfully");
+            showToast("Voice Translator is ready!");
+        } catch (Exception e) {
+            fileLogger.e(TAG, "Failed to add main view to window", e);
+            // Show a toast to user
+            showToast("Failed to show Voice Translator. Check overlay permission: " + e.getMessage());
+            // Stop the service if we can't show the view
+            stopSelf();
+            return;
+        }
         
         // Check initial permissions and microphone availability
         checkInitialSetup();
+    }
+    
+    private void restoreMediaProjection() {
+        if (staticHasPermission && staticMediaProjection != null) {
+            fileLogger.d(TAG, "Restoring MediaProjection from previous session");
+            mediaProjection = staticMediaProjection;
+            hasMediaProjectionPermission = true;
+            
+            if (systemAudioCapture != null) {
+                systemAudioCapture.setMediaProjection(mediaProjection);
+            }
+            
+            // Upgrade to MediaProjection foreground service type
+            if (isForegroundServiceStarted) {
+                upgradeToMediaProjectionService();
+            }
+            
+            // Update UI to show permission is available
+            mainHandler.post(() -> {
+                systemAudioButton.setText("Record Video Audio ✓");
+            });
+            
+            fileLogger.d(TAG, "MediaProjection restored successfully");
+        } else {
+            fileLogger.d(TAG, "No previous MediaProjection to restore");
+        }
     }
     
     private void checkInitialSetup() {
@@ -305,30 +409,96 @@ public class VoiceTranslatorService extends Service implements AudioRecorder.Rec
     
     private void startForegroundService() {
         if (isForegroundServiceStarted) {
+            fileLogger.d(TAG, "Foreground service already started");
             return; // Already started
         }
         
-        createNotificationChannel();
-        
-        Intent notificationIntent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 
-            PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
-        
-        Notification notification = new Notification.Builder(this, NOTIFICATION_CHANNEL_ID)
-                .setContentTitle("Voice Translator")
-                .setContentText("Voice translation service is running")
-                .setSmallIcon(R.drawable.voice_translator_logo)
-                .setContentIntent(pendingIntent)
-                .build();
-        
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            startForeground(NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION);
-        } else {
-            startForeground(NOTIFICATION_ID, notification);
+        try {
+            fileLogger.d(TAG, "Starting foreground service...");
+            createNotificationChannel();
+            
+            Intent notificationIntent = new Intent(this, MainActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            
+            Notification notification = new Notification.Builder(this, NOTIFICATION_CHANNEL_ID)
+                    .setContentTitle("Video Voice Translator")
+                    .setContentText("Ready to translate video audio")
+                    .setSmallIcon(R.drawable.voice_translator_logo)
+                    .setContentIntent(pendingIntent)
+                    .setOngoing(true)
+                    .build();
+            
+            // Start with microphone type (always needed for voice translation)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                startForeground(NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE);
+                fileLogger.d(TAG, "Started foreground service with MICROPHONE type");
+            } else {
+                startForeground(NOTIFICATION_ID, notification);
+                fileLogger.d(TAG, "Started foreground service (legacy Android)");
+            }
+            isForegroundServiceStarted = true;
+            
+        } catch (SecurityException e) {
+            fileLogger.e(TAG, "SecurityException starting foreground service - missing permissions", e);
+            showToast("Missing permissions for background service. Please grant all permissions.");
+            isForegroundServiceStarted = false;
+            throw e;
+        } catch (Exception e) {
+            fileLogger.e(TAG, "Failed to start foreground service", e);
+            showToast("Failed to start background service: " + e.getMessage());
+            isForegroundServiceStarted = false;
+            throw e;
+        }
+    }
+    
+    private void upgradeToMediaProjectionService() {
+        if (!isForegroundServiceStarted) {
+            fileLogger.w(TAG, "Cannot upgrade to MediaProjection service - foreground service not started");
+            return;
         }
         
-        isForegroundServiceStarted = true;
-        fileLogger.d(TAG, "Started foreground service with MediaProjection type");
+        try {
+            fileLogger.d(TAG, "Upgrading to MediaProjection foreground service type...");
+            
+            Intent notificationIntent = new Intent(this, MainActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent, 
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
+            
+            Notification notification = new Notification.Builder(this, NOTIFICATION_CHANNEL_ID)
+                    .setContentTitle("Video Voice Translator")
+                    .setContentText("Recording video audio for translation")
+                    .setSmallIcon(R.drawable.voice_translator_logo)
+                    .setContentIntent(pendingIntent)
+                    .setOngoing(true)
+                    .build();
+            
+            // Try to upgrade to combined MICROPHONE + MEDIA_PROJECTION type only if we have the permission
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && hasMediaProjectionPermission) {
+                try {
+                    // Combine MICROPHONE and MEDIA_PROJECTION types
+                    int serviceType = ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE | ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION;
+                    startForeground(NOTIFICATION_ID, notification, serviceType);
+                    fileLogger.d(TAG, "Successfully upgraded to MICROPHONE + MEDIA_PROJECTION foreground service type");
+                } catch (Exception e) {
+                    fileLogger.w(TAG, "Failed to upgrade to combined type, continuing with MICROPHONE only: " + e.getMessage());
+                    // Update notification content but keep MICROPHONE type only
+                    startForeground(NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE);
+                }
+            } else {
+                // For older Android versions or when no MediaProjection permission, just update the notification with MICROPHONE type
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    startForeground(NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_MICROPHONE);
+                } else {
+                    startForeground(NOTIFICATION_ID, notification);
+                }
+                fileLogger.d(TAG, "Updated foreground service notification with MICROPHONE type");
+            }
+            
+        } catch (Exception e) {
+            fileLogger.e(TAG, "Failed to upgrade to MediaProjection service", e);
+            // Don't stop the service, just log the error
+        }
     }
     
     private void createNotificationChannel() {
@@ -460,13 +630,55 @@ public class VoiceTranslatorService extends Service implements AudioRecorder.Rec
         fileLogger.d(TAG, "Toggle system audio capture button pressed. Current state: " + (isCapturingSystemAudio ? "capturing" : "not capturing"));
         showDebugToast("System Audio button pressed");
         
-        if (isCapturingSystemAudio) {
-            fileLogger.d(TAG, "Stopping system audio capture...");
-            stopSystemAudioCapture();
+        if (hasMediaProjectionPermission) {
+            // If we have permission, show floating button directly
+            fileLogger.d(TAG, "Permission already granted, showing floating button...");
+            mainHandler.post(() -> {
+                minimizeView();
+                showFloatingRecordButton();
+                showToast("Mở ứng dụng video bất kỳ và nhấn nút ghi âm để bắt đầu.");
+            });
         } else {
-            fileLogger.d(TAG, "Starting system audio capture...");
-            startSystemAudioCapture();
+            // Request permission first
+            fileLogger.d(TAG, "Starting system audio capture request...");
+            requestSystemAudioCapture();
         }
+    }
+    
+    private void requestSystemAudioCapture() {
+        fileLogger.d(TAG, "Requesting system audio capture permission...");
+        
+        // Check Android version first
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            fileLogger.w(TAG, "System audio capture requires Android 10+, current: " + Build.VERSION.SDK_INT);
+            showToast("Tính năng capture âm thanh hệ thống cần Android 10 trở lên");
+            return;
+        }
+        
+        // Check if we already have permission
+        if (staticHasPermission && staticMediaProjection != null) {
+            fileLogger.d(TAG, "MediaProjection permission already granted, using existing permission");
+            mediaProjection = staticMediaProjection;
+            hasMediaProjectionPermission = true;
+            systemAudioCapture.setMediaProjection(mediaProjection);
+            
+            mainHandler.post(() -> {
+                minimizeView();
+                showFloatingRecordButton();
+                showToast("Sử dụng quyền đã có. Mở ứng dụng video và nhấn nút ghi âm.");
+            });
+            return;
+        }
+        
+        // Update UI to show requesting permission
+        mainHandler.post(() -> {
+            systemAudioButton.setText("Requesting Permission...");
+            recordingStatus.setText("Đang yêu cầu quyền ghi âm...");
+            recordingStatus.setVisibility(View.VISIBLE);
+        });
+        
+        // Request media projection permission
+        requestMediaProjectionPermission();
     }
 
     private boolean checkPermissions() {
@@ -672,8 +884,17 @@ public class VoiceTranslatorService extends Service implements AudioRecorder.Rec
         
         mainHandler.post(() -> {
             recordingStatus.setVisibility(View.GONE);
-            showTranslationResult(original, translated);
-            showToast("Dịch thuật thành công!");
+            
+            // Show result on popup if floating button is visible, otherwise on main view
+            if (floatingRecordButton != null && floatingRecordButton.isVisible()) {
+                fileLogger.d(TAG, "Showing translation result on popup");
+                translationResultPopup.showResult(original, translated);
+                showToast("Dịch thuật thành công!");
+            } else {
+                fileLogger.d(TAG, "Showing translation result on main view");
+                showTranslationResult(original, translated);
+                showToast("Dịch thuật thành công!");
+            }
             
             // Add to history
             TranslationHistory history = new TranslationHistory(
@@ -683,6 +904,8 @@ public class VoiceTranslatorService extends Service implements AudioRecorder.Rec
             );
             translationHistory.add(0, history); // Add to beginning
             historyAdapter.updateHistory(translationHistory);
+            
+            fileLogger.d(TAG, "Translation result saved to history");
         });
     }
 
@@ -911,7 +1134,7 @@ public class VoiceTranslatorService extends Service implements AudioRecorder.Rec
                         @Override
                         public void onSuccess(String translatedText) {
                             fileLogger.d(TAG, "System audio translation successful");
-                            handleTranslationSuccess(transcribedText, translatedText);
+                            handleFloatingTranslationSuccess(transcribedText, translatedText);
                         }
 
                         @Override
@@ -1182,6 +1405,102 @@ public class VoiceTranslatorService extends Service implements AudioRecorder.Rec
             showToast("Log path copied to clipboard");
         }
     }
+    
+    // New methods for floating record functionality
+    
+    private void showFloatingRecordButton() {
+        if (floatingRecordButton != null) {
+            // Check overlay permission first
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                if (!Settings.canDrawOverlays(this)) {
+                    fileLogger.e(TAG, "Cannot show floating button - missing overlay permission");
+                    showToast("Cần cấp quyền hiển thị trên ứng dụng khác để hiện nút ghi âm");
+                    return;
+                }
+            }
+            
+            try {
+                floatingRecordButton.show();
+                fileLogger.d(TAG, "Floating record button shown successfully");
+                showToast("Nút ghi âm đã xuất hiện! Tìm nút tròn màu xanh ở bên phải màn hình.");
+            } catch (Exception e) {
+                fileLogger.e(TAG, "Error showing floating record button", e);
+                showToast("Lỗi hiển thị nút ghi âm: " + e.getMessage());
+            }
+        } else {
+            fileLogger.e(TAG, "FloatingRecordButton is null!");
+            showToast("Lỗi: Nút ghi âm chưa được khởi tạo");
+        }
+    }
+    
+    private void hideFloatingRecordButton() {
+        if (floatingRecordButton != null) {
+            floatingRecordButton.hide();
+            fileLogger.d(TAG, "Floating record button hidden");
+        }
+    }
+    
+    private void startFloatingRecording() {
+        fileLogger.d(TAG, "Starting floating recording...");
+        
+        if (mediaProjection == null) {
+            fileLogger.e(TAG, "MediaProjection is null, cannot start recording");
+            floatingRecordButton.showStatusText("Lỗi: Không có quyền ghi âm");
+            return;
+        }
+        
+        // Start system audio capture
+        if (systemAudioCapture.startSystemAudioCapture()) {
+            isCapturingSystemAudio = true;
+            floatingRecordButton.setRecordingState(true);
+            floatingRecordButton.showStatusText("Đang ghi âm...");
+            fileLogger.d(TAG, "System audio capture started from floating button");
+        } else {
+            fileLogger.e(TAG, "Failed to start system audio capture from floating button");
+            floatingRecordButton.showStatusText("Lỗi ghi âm");
+        }
+    }
+    
+    private void stopFloatingRecording() {
+        fileLogger.d(TAG, "Stopping floating recording...");
+        
+        if (isCapturingSystemAudio) {
+            systemAudioCapture.stopSystemAudioCapture();
+            isCapturingSystemAudio = false;
+            floatingRecordButton.setRecordingState(false);
+            floatingRecordButton.showStatusText("Đang xử lý...");
+            fileLogger.d(TAG, "System audio capture stopped from floating button");
+        }
+    }
+    
+    private void handleFloatingTranslationSuccess(String original, String translated) {
+        fileLogger.d(TAG, "Floating translation successful:");
+        fileLogger.d(TAG, "  Original (" + selectedSourceLanguage.getCode() + "): " + original);
+        fileLogger.d(TAG, "  Translated (" + selectedTargetLanguage.getCode() + "): " + translated);
+        
+        mainHandler.post(() -> {
+            // Hide status text on floating button
+            floatingRecordButton.showStatusText("Hoàn thành!");
+            
+            // Show translation result in popup
+            if (translationResultPopup != null) {
+                translationResultPopup.showResult(original, translated);
+            }
+            
+            // Add to history
+            TranslationHistory history = new TranslationHistory(
+                original, translated, 
+                selectedSourceLanguage.getName(), 
+                selectedTargetLanguage.getName()
+            );
+            translationHistory.add(0, history); // Add to beginning
+            if (historyAdapter != null) {
+                historyAdapter.updateHistory(translationHistory);
+            }
+            
+            fileLogger.d(TAG, "Translation result shown in popup");
+        });
+    }
 
     @Override
     public void onDestroy() {
@@ -1192,7 +1511,10 @@ public class VoiceTranslatorService extends Service implements AudioRecorder.Rec
         }
         
         // Stop foreground service
-        stopForeground(true);
+        if (isForegroundServiceStarted) {
+            stopForeground(true);
+            isForegroundServiceStarted = false;
+        }
         
         if (audioRecorder != null) {
             audioRecorder.release();
@@ -1204,7 +1526,38 @@ public class VoiceTranslatorService extends Service implements AudioRecorder.Rec
             realTimeTranscriber.destroy();
         }
         if (windowManager != null && view != null) {
-            windowManager.removeView(view);
+            try {
+                windowManager.removeView(view);
+            } catch (Exception e) {
+                fileLogger.w(TAG, "Error removing main view: " + e.getMessage());
+            }
         }
+        
+        // Clean up floating components
+        if (floatingRecordButton != null) {
+            floatingRecordButton.destroy();
+            floatingRecordButton = null;
+        }
+        if (translationResultPopup != null) {
+            translationResultPopup.destroy();
+            translationResultPopup = null;
+        }
+        
+        // Keep MediaProjection for next time (don't release it)
+        // mediaProjection will be stored in staticMediaProjection
+        fileLogger.d(TAG, "Service destroyed, MediaProjection preserved for next session");
+    }
+    
+    // Static method to clear MediaProjection when app is fully closed
+    public static void clearMediaProjectionPermission() {
+        if (staticMediaProjection != null) {
+            try {
+                staticMediaProjection.stop();
+            } catch (Exception e) {
+                // Ignore cleanup errors
+            }
+            staticMediaProjection = null;
+        }
+        staticHasPermission = false;
     }
 }

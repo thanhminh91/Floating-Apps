@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="250dp"
+    android:minHeight="40dp"
+    android:updatePeriodMillis="0"
+    android:initialLayout="@layout/voice_translator_widget"
+    android:description="@string/voice_translator_widget_description"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen"
+    android:previewImage="@drawable/voice_translator_logo">
+</appwidget-provider>

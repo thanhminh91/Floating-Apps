@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/floating_background"
+    android:padding="8dp"
+    android:alpha="0.92">
+
+    <!-- Close Button -->
+    <ImageButton
+        android:id="@+id/closeButton"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_gravity="end"
+        android:background="@android:color/transparent"
+        android:src="@drawable/cancel"
+        android:contentDescription="Close"
+        android:scaleType="centerInside" />
+
+    <!-- Original Text -->
+    <TextView
+        android:id="@+id/originalLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Original:"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:textSize="10sp"
+        android:layout_marginTop="6dp" />
+
+    <TextView
+        android:id="@+id/originalText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
+        android:layout_marginBottom="6dp"
+        android:minHeight="30dp" />
+
+    <!-- Translated Text -->
+    <TextView
+        android:id="@+id/translatedLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Translated:"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold"
+        android:textSize="10sp" />
+
+    <TextView
+        android:id="@+id/translatedText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp"
+        android:layout_marginBottom="6dp"
+        android:minHeight="30dp" />
+
+    <!-- Action Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end">
+
+        <Button
+            android:id="@+id/copyButton"
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:text="Copy"
+            android:textSize="10sp"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/small_round_button"
+            android:layout_marginEnd="6dp"
+            android:minWidth="50dp" />
+
+        <Button
+            android:id="@+id/shareButton"
+            android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:text="Share"
+            android:textSize="10sp"
+            android:textColor="#FFFFFF"
+            android:background="@drawable/small_round_button"
+            android:minWidth="50dp" />
+
+    </LinearLayout>
+
+</LinearLayout>

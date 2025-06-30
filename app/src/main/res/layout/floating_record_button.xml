@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center">
+
+    <!-- Record Button -->
+    <ImageButton
+        android:id="@+id/recordButton"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:background="@drawable/floating_record_button_bg"
+        android:src="@drawable/play_small"
+        android:contentDescription="Record Audio"
+        android:scaleType="centerInside"
+        android:padding="10dp"
+        android:elevation="6dp" />
+
+    <!-- Status Text -->
+    <TextView
+        android:id="@+id/statusText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tap to Record"
+        android:textColor="#FFFFFF"
+        android:textSize="8sp"
+        android:background="@drawable/status_text_bg"
+        android:padding="2dp"
+        android:layout_marginTop="2dp"
+        android:visibility="gone"
+        android:maxWidth="60dp"
+        android:gravity="center" />
+
+</LinearLayout>

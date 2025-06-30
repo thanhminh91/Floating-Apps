@@ -148,5 +148,6 @@
     <string name="french">French</string>
     <string name="german">German</string>
     <string name="russian">Russian</string>
+    <string name="voice_translator_widget_description">Quick access to Video Voice Translator</string>
     <string name="arabic">Arabic</string>
 </resources>
