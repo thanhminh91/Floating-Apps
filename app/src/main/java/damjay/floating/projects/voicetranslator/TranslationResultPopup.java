@@ -47,23 +47,31 @@ public class TranslationResultPopup {
     }
     
     private void createPopupView() {
-        // Inflate the popup layout
-        popupView = LayoutInflater.from(context).inflate(R.layout.translation_result_popup, null);
-        
-        // Find views
-        originalText = popupView.findViewById(R.id.originalText);
-        translatedText = popupView.findViewById(R.id.translatedText);
-        copyButton = popupView.findViewById(R.id.copyButton);
-        shareButton = popupView.findViewById(R.id.shareButton);
-        closeButton = popupView.findViewById(R.id.closeButton);
-        
-        // Set up click listeners
-        copyButton.setOnClickListener(v -> copyTranslatedText());
-        shareButton.setOnClickListener(v -> shareTranslatedText());
-        closeButton.setOnClickListener(v -> hide());
-        
-        // Create layout params
-        createLayoutParams();
+        try {
+            // Inflate the popup layout
+            Log.d(TAG, "Inflating popup layout");
+            popupView = LayoutInflater.from(context).inflate(R.layout.translation_result_popup, null);
+            
+            // Find views
+            originalText = popupView.findViewById(R.id.originalText);
+            translatedText = popupView.findViewById(R.id.translatedText);
+            copyButton = popupView.findViewById(R.id.copyButton);
+            shareButton = popupView.findViewById(R.id.shareButton);
+            closeButton = popupView.findViewById(R.id.closeButton);
+            
+            Log.d(TAG, "Views found - originalText: " + originalText + ", translatedText: " + translatedText);
+            
+            // Set up click listeners
+            if (copyButton != null) copyButton.setOnClickListener(v -> copyTranslatedText());
+            if (shareButton != null) shareButton.setOnClickListener(v -> shareTranslatedText());
+            if (closeButton != null) closeButton.setOnClickListener(v -> hide());
+            
+            // Create layout params
+            createLayoutParams();
+            Log.d(TAG, "Popup view created successfully");
+        } catch (Exception e) {
+            Log.e(TAG, "Error creating popup view", e);
+        }
     }
     
     private void createLayoutParams() {
@@ -72,30 +80,38 @@ public class TranslationResultPopup {
                 : WindowManager.LayoutParams.TYPE_PHONE;
         
         params = new WindowManager.LayoutParams(
-                WindowManager.LayoutParams.MATCH_PARENT,
+                WindowManager.LayoutParams.WRAP_CONTENT,
                 WindowManager.LayoutParams.WRAP_CONTENT,
                 type,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | 
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN |
+                WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS,
                 PixelFormat.TRANSLUCENT
         );
         
-        // Position at bottom of screen, more compact
+        // Position at bottom of screen, more compact with fixed height
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         params.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL;
         params.x = 0;
-        params.y = 80; // 80px from bottom (higher up)
-        params.width = displayMetrics.widthPixels - 60; // 30px margin on each side (smaller popup)
+        params.y = 50; // 50px from bottom (closer to bottom)
+        params.width = displayMetrics.widthPixels - 40; // 20px margin on each side
+        params.height = 220; // Fixed height to avoid covering entire screen
+        
+        Log.d(TAG, "Layout params created - Width: " + params.width + ", Screen width: " + displayMetrics.widthPixels);
     }
     
     public void showResult(String original, String translated) {
+        Log.d(TAG, "showResult called - Original: '" + original + "', Translated: '" + translated + "'");
         mainHandler.post(() -> {
             if (originalText != null && translatedText != null) {
-                originalText.setText(original);
-                translatedText.setText(translated);
+                Log.d(TAG, "Setting text - Original: '" + original + "', Translated: '" + translated + "'");
+                originalText.setText(original != null ? original : "No original text");
+                translatedText.setText(translated != null ? translated : "No translation");
                 show();
                 
-                // Auto-hide after 8 seconds
-                mainHandler.postDelayed(this::hide, 8000);
+                // Remove auto-hide - popup will stay until manually closed
+            } else {
+                Log.e(TAG, "TextViews are null - originalText: " + originalText + ", translatedText: " + translatedText);
             }
         });
     }

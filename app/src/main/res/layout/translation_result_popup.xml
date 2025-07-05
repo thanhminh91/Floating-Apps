@@ -5,8 +5,9 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@drawable/floating_background"
-    android:padding="8dp"
-    android:alpha="0.92">
+    android:padding="16dp"
+    android:alpha="0.95"
+    android:elevation="8dp">
 
     <!-- Close Button -->
     <ImageButton
@@ -25,19 +26,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Original:"
-        android:textColor="#FFFFFF"
+        android:textColor="#4CAF50"
         android:textStyle="bold"
-        android:textSize="10sp"
+        android:textSize="12sp"
         android:layout_marginTop="6dp" />
 
-    <TextView
-        android:id="@+id/originalText"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="#FFFFFF"
-        android:textSize="12sp"
-        android:layout_marginBottom="6dp"
-        android:minHeight="30dp" />
+        android:layout_height="60dp"
+        android:fadingEdge="vertical"
+        android:fadingEdgeLength="10dp"
+        android:scrollbars="vertical">
+        
+        <TextView
+            android:id="@+id/originalText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:lineSpacingExtra="2dp" />
+    </ScrollView>
 
     <!-- Translated Text -->
     <TextView
@@ -45,18 +53,26 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Translated:"
-        android:textColor="#FFFFFF"
+        android:textColor="#4CAF50"
         android:textStyle="bold"
-        android:textSize="10sp" />
+        android:textSize="12sp" />
 
-    <TextView
-        android:id="@+id/translatedText"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="#FFFFFF"
-        android:textSize="12sp"
-        android:layout_marginBottom="6dp"
-        android:minHeight="30dp" />
+        android:layout_height="80dp"
+        android:fadingEdge="vertical"
+        android:fadingEdgeLength="10dp"
+        android:scrollbars="vertical"
+        android:layout_marginBottom="8dp">
+        
+        <TextView
+            android:id="@+id/translatedText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:lineSpacingExtra="2dp" />
+    </ScrollView>
 
     <!-- Action Buttons -->
     <LinearLayout

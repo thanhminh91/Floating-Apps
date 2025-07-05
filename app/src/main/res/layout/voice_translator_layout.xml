@@ -195,6 +195,33 @@
 
                 </LinearLayout>
 
+                <!-- Gemini Stream Translation -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center"
+                    android:layout_marginBottom="10dp">
+
+                    <Button
+                        android:id="@+id/geminiStreamButton"
+                        android:layout_width="120dp"
+                        android:layout_height="50dp"
+                        android:text="Gemini Stream"
+                        android:textColor="#FFFFFF"
+                        android:background="@drawable/round_button"
+                        android:textSize="10sp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="AI Screen + Audio"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                        android:layout_marginStart="10dp"/>
+
+                </LinearLayout>
+
                 <TextView
                     android:id="@+id/recordingStatus"
                     android:layout_width="wrap_content"
@@ -202,6 +229,16 @@
                     android:text=""
                     android:textColor="#FFFFFF"
                     android:textSize="14sp"
+                    android:visibility="gone"/>
+
+                <TextView
+                    android:id="@+id/statusText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textColor="#4CAF50"
+                    android:textSize="12sp"
+                    android:layout_marginTop="5dp"
                     android:visibility="gone"/>
 
             </LinearLayout>

@@ -73,7 +73,9 @@ public class VoiceTranslatorService extends Service implements AudioRecorder.Rec
     private Spinner targetLanguageSpinner;
     private Button recordButton;
     private Button systemAudioButton;
+    private Button geminiStreamButton;
     private TextView recordingStatus;
+    private TextView statusText;
     private TextView originalText;
     private TextView translatedText;
     private View translationResult;
@@ -94,10 +96,12 @@ public class VoiceTranslatorService extends Service implements AudioRecorder.Rec
     // New floating components
     private FloatingRecordButton floatingRecordButton;
     private TranslationResultPopup translationResultPopup;
+    private GeminiStreamTranslator geminiStreamTranslator;
     
     // State
     private boolean isRecording = false;
     private boolean isCapturingSystemAudio = false;
+    private boolean isGeminiStreamActive = false;
     private boolean isForegroundServiceStarted = false;
     private boolean hasMediaProjectionPermission = false;
     private Language selectedSourceLanguage;
@@ -260,6 +264,25 @@ public class VoiceTranslatorService extends Service implements AudioRecorder.Rec
         // Initialize floating components
         floatingRecordButton = new FloatingRecordButton(this);
         translationResultPopup = new TranslationResultPopup(this);
+        geminiStreamTranslator = new GeminiStreamTranslator(this, GOOGLE_AI_API_KEY);
+        
+        // Set up Gemini stream translator callback
+        geminiStreamTranslator.setCallback(new GeminiStreamTranslator.GeminiTranslationCallback() {
+            @Override
+            public void onTranslationResult(String originalText, String translatedText) {
+                handleGeminiTranslationSuccess(originalText, translatedText);
+            }
+            
+            @Override
+            public void onError(String error) {
+                handleGeminiTranslationError(error);
+            }
+            
+            @Override
+            public void onStatusUpdate(String status) {
+                handleGeminiStatusUpdate(status);
+            }
+        });
         
         // Set up floating record button listener
         floatingRecordButton.setOnRecordClickListener(new FloatingRecordButton.OnRecordClickListener() {
@@ -524,7 +547,9 @@ public class VoiceTranslatorService extends Service implements AudioRecorder.Rec
         targetLanguageSpinner = view.findViewById(R.id.targetLanguageSpinner);
         recordButton = view.findViewById(R.id.recordButton);
         systemAudioButton = view.findViewById(R.id.systemAudioButton);
+        geminiStreamButton = view.findViewById(R.id.geminiStreamButton);
         recordingStatus = view.findViewById(R.id.recordingStatus);
+        statusText = view.findViewById(R.id.statusText);
         originalText = view.findViewById(R.id.originalText);
         translatedText = view.findViewById(R.id.translatedText);
         translationResult = view.findViewById(R.id.translationResult);
@@ -594,6 +619,7 @@ public class VoiceTranslatorService extends Service implements AudioRecorder.Rec
         // Recording buttons
         recordButton.setOnClickListener(v -> toggleRecording());
         systemAudioButton.setOnClickListener(v -> toggleSystemAudioCapture());
+        geminiStreamButton.setOnClickListener(v -> toggleGeminiStreamTranslation());
         
         // Translation result buttons
         copyButton.setOnClickListener(v -> copyTranslatedText());
@@ -1546,6 +1572,127 @@ public class VoiceTranslatorService extends Service implements AudioRecorder.Rec
         // Keep MediaProjection for next time (don't release it)
         // mediaProjection will be stored in staticMediaProjection
         fileLogger.d(TAG, "Service destroyed, MediaProjection preserved for next session");
+    }
+    
+    // Gemini Stream Translation handlers
+    private void handleGeminiTranslationSuccess(String originalText, String translatedText) {
+        fileLogger.d(TAG, "Gemini translation successful:");
+        fileLogger.d(TAG, "  Original: " + originalText);
+        fileLogger.d(TAG, "  Translated: " + translatedText);
+        
+        mainHandler.post(() -> {
+            // Show result on popup if floating button is visible, otherwise on main view
+            if (floatingRecordButton != null && floatingRecordButton.isVisible()) {
+                fileLogger.d(TAG, "Showing Gemini translation result on popup");
+                translationResultPopup.showResult(originalText, translatedText);
+                showToast("Gemini dịch thuật thành công!");
+            } else {
+                fileLogger.d(TAG, "Showing Gemini translation result on main view");
+                showTranslationResult(originalText, translatedText);
+                showToast("Gemini dịch thuật thành công!");
+            }
+            
+            // Add to history
+            TranslationHistory history = new TranslationHistory(
+                originalText, 
+                translatedText, 
+                selectedSourceLanguage != null ? selectedSourceLanguage.getName() : "Auto",
+                selectedTargetLanguage != null ? selectedTargetLanguage.getName() : "Vietnamese"
+            );
+            translationHistory.add(0, history);
+            
+            if (historyAdapter != null) {
+                historyAdapter.updateHistory(translationHistory);
+            }
+        });
+    }
+    
+    private void handleGeminiTranslationError(String error) {
+        fileLogger.e(TAG, "Gemini translation error: " + error);
+        
+        mainHandler.post(() -> {
+            showToast("Lỗi Gemini: " + error);
+            // Update status on UI
+            if (statusText != null) {
+                statusText.setText("Lỗi Gemini: " + error);
+                statusText.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+    
+    private void handleGeminiStatusUpdate(String status) {
+        fileLogger.d(TAG, "Gemini status: " + status);
+        
+        mainHandler.post(() -> {
+            showToast(status);
+            // Update status on UI
+            if (statusText != null) {
+                statusText.setText(status);
+                statusText.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+    
+    // Methods to control Gemini Stream Translation
+    private void startGeminiStreamTranslation() {
+        if (geminiStreamTranslator != null && mediaProjection != null) {
+            // Set languages based on current selection
+            String sourceLang = selectedSourceLanguage != null ? selectedSourceLanguage.getCode() : "auto";
+            String targetLang = selectedTargetLanguage != null ? selectedTargetLanguage.getCode() : "vi";
+            
+            geminiStreamTranslator.setLanguages(sourceLang, targetLang);
+            geminiStreamTranslator.startStreamTranslation(mediaProjection);
+            
+            isGeminiStreamActive = true;
+            fileLogger.d(TAG, "Started Gemini stream translation");
+        } else {
+            showToast("Cần quyền chia sẻ màn hình để sử dụng Gemini");
+            fileLogger.w(TAG, "Cannot start Gemini stream translation - missing MediaProjection");
+        }
+    }
+    
+    private void stopGeminiStreamTranslation() {
+        if (geminiStreamTranslator != null) {
+            geminiStreamTranslator.stopStreamTranslation();
+            isGeminiStreamActive = false;
+            fileLogger.d(TAG, "Stopped Gemini stream translation");
+        }
+    }
+    
+    // Gemini Stream Translation toggle
+    private void toggleGeminiStreamTranslation() {
+        fileLogger.d(TAG, "Toggle Gemini Stream button pressed. Current state: " + 
+                     (isGeminiStreamActive ? "active" : "inactive"));
+        
+        if (!hasMediaProjectionPermission || mediaProjection == null) {
+            showToast("Cần quyền chia sẻ màn hình trước! Nhấn 'Record Video Audio' trước.");
+            fileLogger.w(TAG, "Cannot start Gemini Stream - missing MediaProjection permission");
+            return;
+        }
+        
+        if (isGeminiStreamActive) {
+            fileLogger.d(TAG, "Stopping Gemini Stream translation...");
+            stopGeminiStreamTranslation();
+        } else {
+            fileLogger.d(TAG, "Starting Gemini Stream translation...");
+            startGeminiStreamTranslation();
+        }
+        
+        updateGeminiStreamUI();
+    }
+    
+    private void updateGeminiStreamUI() {
+        mainHandler.post(() -> {
+            if (geminiStreamButton != null) {
+                if (isGeminiStreamActive) {
+                    geminiStreamButton.setText("Stop Gemini");
+                    geminiStreamButton.setBackgroundResource(R.drawable.round_button_pressed);
+                } else {
+                    geminiStreamButton.setText("Gemini Stream");
+                    geminiStreamButton.setBackgroundResource(R.drawable.round_button);
+                }
+            }
+        });
     }
     
     // Static method to clear MediaProjection when app is fully closed
